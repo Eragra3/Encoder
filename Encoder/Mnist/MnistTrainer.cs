@@ -16,7 +16,7 @@ namespace Encoder.Mnist
         private static MnistModel[] _validationSet;
         private static string _validationSetPath;
 
-        public static TrainingResult TrainOnMnist(MlpOptions options)
+        public static TrainingResult TrainOnMnist(NeuralNetworkOptions options)
         {
             var isVerbose = options.IsVerbose;
             var normalize = options.NormalizeInput;

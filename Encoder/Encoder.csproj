@@ -74,6 +74,7 @@
     <Compile Include="Network\InputLayer.cs" />
     <Compile Include="Network\InputModel.cs" />
     <Compile Include="Network\Layer.cs" />
+    <Compile Include="Network\NeuralNetworkOptions.cs" />
     <Compile Include="Network\NeuralNetwork.cs" />
     <Compile Include="Network\OutputLayer.cs" />
     <Compile Include="Network\TrainingModel.cs" />
