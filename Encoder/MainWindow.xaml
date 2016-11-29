@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Encoder"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        WindowStartupLocation="CenterScreen"
+        Title="Dr inż Piotr Szymański to najlepszy prowadzący" Height="700" Width="1000">
     <Grid>
         
     </Grid>

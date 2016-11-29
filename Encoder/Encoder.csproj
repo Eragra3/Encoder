@@ -35,8 +35,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MathNet.Numerics, Version=3.13.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.3.13.1\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -55,6 +64,24 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Mnist\MnistModel.cs" />
+    <Compile Include="Mnist\MnistParser.cs" />
+    <Compile Include="Mnist\MnistTrainer.cs" />
+    <Compile Include="Network\ActivationFunction.cs" />
+    <Compile Include="Network\BackpropagationResult.cs" />
+    <Compile Include="Network\EvaluationModel.cs" />
+    <Compile Include="Network\HelperFunctions.cs" />
+    <Compile Include="Network\InputLayer.cs" />
+    <Compile Include="Network\InputModel.cs" />
+    <Compile Include="Network\Layer.cs" />
+    <Compile Include="Network\NeuralNetwork.cs" />
+    <Compile Include="Network\OutputLayer.cs" />
+    <Compile Include="Network\TrainingModel.cs" />
+    <Compile Include="Network\TrainingResult.cs" />
+    <Compile Include="Serialization\MatrixConverter.cs" />
+    <Compile Include="Serialization\MatrixSerializationModel.cs" />
+    <Compile Include="Serialization\VectorConverter.cs" />
+    <Compile Include="Serialization\VectorSerializationModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -69,6 +96,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Network\HiddenLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -86,6 +114,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -95,6 +124,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
