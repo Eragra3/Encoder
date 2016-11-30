@@ -11,14 +11,23 @@ namespace Encoder.Network
 {
     public class NeuralNetwork
     {
+        [JsonProperty]
         private readonly InputLayer _inputLayer;
+        [JsonProperty]
         private readonly HiddenLayer[] _hiddenLayers;
+        [JsonProperty]
         private readonly OutputLayer _outputLayer;
 
         //all layers except input
         private readonly HiddenLayer[] _layers;
 
+        [JsonProperty]
         private readonly int[] _sizes;
+
+        [JsonConstructor]
+        private NeuralNetwork()
+        {
+        }
 
         public NeuralNetwork(
             ActivationFunction activationFunction,
@@ -213,7 +222,7 @@ namespace Encoder.Network
 
             var trainingResult = new TrainingResult
             {
-                Mlp = this,
+                NeuralNetwork = this,
                 Epochs = epoch,
                 EpochErrors = epochErrors.ToArray(),
                 Evaluations = epochEvaluations.ToArray()
@@ -242,9 +251,9 @@ namespace Encoder.Network
                 activations[i + 1] = activation;
                 prevActivation = activation;
             }
-            var outputNet = _hiddenLayers[layersCount].GetNet(prevActivation);
+            var outputNet = _outputLayer.GetNet(prevActivation);
             nets[layersCount] = outputNet;
-            var outputActivation = _hiddenLayers[layersCount].GetActivation(outputNet);
+            var outputActivation = _outputLayer.GetActivation(outputNet);
             activations[layersCount] = outputActivation;
 
             #endregion
@@ -304,6 +313,16 @@ namespace Encoder.Network
             };
 
             return result;
+        }
+
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        public static NeuralNetwork FromJson(string json)
+        {
+            return JsonConvert.DeserializeObject<NeuralNetwork>(json);
         }
     }
 }

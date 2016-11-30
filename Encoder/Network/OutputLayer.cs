@@ -4,11 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics.LinearAlgebra;
+using Newtonsoft.Json;
 
 namespace Encoder.Network
 {
     public class OutputLayer : HiddenLayer
     {
+        [JsonConstructor]
+        private OutputLayer()
+        {
+
+        }
+
         public OutputLayer(
             int inputsCount,
             int outputsCount,

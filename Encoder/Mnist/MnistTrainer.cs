@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Encoder.Network;
+using Newtonsoft.Json;
 
 namespace Encoder.Mnist
 {
@@ -21,9 +23,15 @@ namespace Encoder.Mnist
             var isVerbose = options.IsVerbose;
             var normalize = options.NormalizeInput;
 
+            #region dump used params
+            //lel
+            var dumpling = JsonConvert.SerializeObject(options, Formatting.Indented);
+            File.WriteAllText("neural_network.log", dumpling);
+            #endregion
+
             var mlp = new NeuralNetwork(
                 options.ActivationFunction,
-                options.NormalStDeviation,
+                options.InitialWeightsRange,
                 options.Sizes);
             if (_trainingSetPath != options.TrainingPath || _trainingSet == null)
             {
@@ -55,7 +63,7 @@ namespace Encoder.Mnist
                 BatchSize = options.BatchSize,
                 LearningRate = options.LearningRate,
                 Momentum = options.Momentum,
-                EvaluateOnEachEpoch = options.EvaluateOnEachEpoch
+                EvaluateOnEachEpoch = options.LogData
             };
 
             var trainingResult = mlp.Train(trainingModel);

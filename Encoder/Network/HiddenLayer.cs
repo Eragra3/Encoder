@@ -7,7 +7,6 @@ using MathNet.Numerics.LinearAlgebra.Double;
 using Newtonsoft.Json;
 using Matrix = MathNet.Numerics.LinearAlgebra.Double.Matrix;
 using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
-using VectorConverter = System.Windows.VectorConverter;
 
 namespace Encoder.Network
 {
@@ -33,7 +32,9 @@ namespace Encoder.Network
         [JsonConverter(typeof(VectorConverter))]
         public Vector<double> Biases;
 
+        [JsonProperty]
         private readonly int _inputsCount;
+        [JsonProperty]
         private readonly int _neuronsCount;
 
         public ActivationFunction CurrentActivationFunction { get; }
@@ -56,7 +57,7 @@ namespace Encoder.Network
         }
 
         [JsonConstructor]
-        private HiddenLayer()
+        protected HiddenLayer()
         {
 
         }

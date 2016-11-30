@@ -8,7 +8,7 @@ namespace Encoder.Network
 {
    public class TrainingResult
     {
-        public NeuralNetwork Mlp { get; set; }
+        public NeuralNetwork NeuralNetwork { get; set; }
 
         public int Epochs { get; set; }
 

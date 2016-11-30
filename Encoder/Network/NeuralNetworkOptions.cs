@@ -30,9 +30,9 @@ namespace Encoder.Network
 
         public ActivationFunction ActivationFunction { get; set; }
 
-        public double NormalStDeviation { get; set; }
+        public double InitialWeightsRange { get; set; }
 
-        public bool EvaluateOnEachEpoch { get; set; }
+        public bool LogData { get; set; }
 
         public bool NormalizeInput { get; set; }
 
@@ -48,8 +48,8 @@ namespace Encoder.Network
             bool isVerbose,
             int batchSize,
             ActivationFunction activationFunction,
-            double normalStDeviation,
-            bool evaluateOnEachEpoch,
+            double initialWeightsRange,
+            bool logData,
             bool normalizeInput
             )
         {
@@ -64,8 +64,8 @@ namespace Encoder.Network
             IsVerbose = isVerbose;
             BatchSize = batchSize;
             ActivationFunction = activationFunction;
-            NormalStDeviation = normalStDeviation;
-            EvaluateOnEachEpoch = evaluateOnEachEpoch;
+            InitialWeightsRange = initialWeightsRange;
+            LogData = logData;
             NormalizeInput = normalizeInput;
         }
     }
