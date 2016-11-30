@@ -170,12 +170,12 @@ namespace Encoder.Network
                 for (var i = 0; i < layersCount; i++)
                 {
                     var weights = _layers[i].Weights;
-                    var weightsChange = learningRate / batchSize * nablaWeights[i];
+                    var weightsChange = learningRate * nablaWeights[i];
                     if (prevWeightsChange[i] != null) weightsChange += momentum * prevWeightsChange[i];
                     _layers[i].Weights = weights - weightsChange;
 
                     var biases = _layers[i].Biases;
-                    var biasesChange = learningRate / batchSize * nablaBiases[i];
+                    var biasesChange = learningRate * nablaBiases[i];
                     if (prevBiasChange[i] != null) biasesChange += momentum * prevBiasChange[i];
                     _layers[i].Biases = biases - biasesChange;
 

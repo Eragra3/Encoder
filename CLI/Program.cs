@@ -38,8 +38,8 @@ namespace CLI
 
             //mlp params
             int[] layersSizes = { 70, 200, 10 };
-            double learningRate = 7;
-            double momentum = 0.00;
+            double learningRate = 0.5;
+            double momentum = 0.9;
             double errorThreshold = 0;
             int batchSize = 20;
             ActivationFunction activationFunction = ActivationFunction.Sigmoid;
