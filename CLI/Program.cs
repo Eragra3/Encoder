@@ -75,7 +75,7 @@ namespace CLI
                     .Parameter("normal", val => normalStDev = double.Parse(val, CultureInfo.InvariantCulture), "Initial weights normal distribution standard deviation")
                     .Option("v", () => isVerbose = true, "Explain what is happening")
                     .Option("verbose", () => isVerbose = true, "Explain what is happening")
-                    .Option("d", () => dump  = true, "Dump training data")
+                    .Option("d", () => dump = true, "Dump training data")
                     .Option("dump", () => dump = true, "Dump training data")
                     .Option("n", () => normalize = true, "Normalize input")
                     .Option("normalize", () => normalize = true, "Normalize input")
@@ -145,9 +145,12 @@ namespace CLI
 
                         if (dump)
                         {
-                            var directory = new FileInfo(outputPath).Directory?.FullName ?? "";
-                            ExperimentVisualization.GenerateErrorPlot(trainingResult, directory + "/error");
-                            ExperimentVisualization.GenerateEvaluationPlot(trainingResult, directory + "/evaluation");
+                            var fi = new FileInfo(outputPath);
+                            var directory = fi.Directory?.FullName ?? "";
+                            var fileName = Path.GetFileNameWithoutExtension(outputPath);
+                            directory += $"/{fileName}_";
+                            ExperimentVisualization.GenerateErrorPlot(trainingResult, $"{directory}error");
+                            ExperimentVisualization.GenerateEvaluationPlot(trainingResult, $"{directory}evaluation");
                         }
 
                         break;
