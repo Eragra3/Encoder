@@ -13,6 +13,7 @@ namespace CLI
         View,
         Help,
         Experiment,
-        Features
+        Features,
+        Encoder
     }
 }

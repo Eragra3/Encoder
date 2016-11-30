@@ -30,10 +30,22 @@ namespace Encoder.Mnist
             File.WriteAllText("neural_network.log", dumpling);
             #endregion
 
-            var mlp = new NeuralNetwork(
+            NeuralNetwork mlp;
+            if (isEncoder)
+            {
+                mlp = new Network.Encoder(
                 options.ActivationFunction,
                 options.InitialWeightsRange,
                 options.Sizes);
+            }
+            else
+            {
+                mlp = new NeuralNetwork(
+                    options.ActivationFunction,
+                    options.InitialWeightsRange,
+                    options.Sizes);
+            }
+
             if (_trainingSetPath != options.TrainingPath || _trainingSet == null)
             {
                 _trainingSet = MnistParser.ReadAll(options.TrainingPath, normalize, isEncoder);

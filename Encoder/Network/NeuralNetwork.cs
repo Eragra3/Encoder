@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,15 +13,15 @@ namespace Encoder.Network
     public class NeuralNetwork
     {
         [JsonProperty]
-        private readonly InputLayer _inputLayer;
+        protected readonly InputLayer _inputLayer;
         [JsonProperty]
-        private readonly HiddenLayer[] _hiddenLayers;
+        protected readonly HiddenLayer[] _hiddenLayers;
         [JsonProperty]
-        private readonly OutputLayer _outputLayer;
+        protected readonly OutputLayer _outputLayer;
 
         //all layers except input
-        private HiddenLayer[] _layers;
-        private HiddenLayer[] Layers
+        protected HiddenLayer[] _layers;
+        protected HiddenLayer[] Layers
         {
             get
             {
@@ -38,10 +39,10 @@ namespace Encoder.Network
         }
 
         [JsonProperty]
-        private readonly int[] _sizes;
+        protected readonly int[] _sizes;
 
         [JsonConstructor]
-        private NeuralNetwork()
+        protected NeuralNetwork()
         {
         }
 
@@ -102,7 +103,7 @@ namespace Encoder.Network
 
             var isVerbose = trainingModel.IsVerbose;
             var evaluateOnEachEpoch = trainingModel.EvaluateOnEachEpoch;
-
+            Debugger.Launch();
             IList<double> epochErrors = new List<double>(maxEpochs);
             var epochEvaluations = new List<EvaluationModel>(maxEpochs);
 
@@ -342,11 +343,6 @@ namespace Encoder.Network
         public string ToJson()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        public static NeuralNetwork FromJson(string json)
-        {
-            return JsonConvert.DeserializeObject<NeuralNetwork>(json);
         }
     }
 }

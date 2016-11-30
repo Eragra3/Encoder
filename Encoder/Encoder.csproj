@@ -88,6 +88,7 @@
     <Compile Include="Mnist\MnistViewer.cs" />
     <Compile Include="Network\ActivationFunction.cs" />
     <Compile Include="Network\BackpropagationResult.cs" />
+    <Compile Include="Network\Encoder.cs" />
     <Compile Include="Network\EvaluationModel.cs" />
     <Compile Include="Network\HelperFunctions.cs" />
     <Compile Include="Network\InputLayer.cs" />

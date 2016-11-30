@@ -48,7 +48,7 @@ namespace CLI
             var activationFunction = ActivationFunction.Sigmoid;
             var normalStDev = 0.5;
 
-            var imageWidth = 10;
+            var imageWidth = 7;
 
             var maxEpochs = 200;
 
@@ -68,8 +68,6 @@ namespace CLI
                     .Option("evaluate", () => evaluate = true, "Evaluate using MNIST dataset")
                     .Option("n", () => normalize = true, "Normalize input")
                     .Option("normalize", () => normalize = true, "Normalize input")
-                    .Option("e", () => isEncoder = true, "Use encoder mode")
-                    .Option("encoder", () => isEncoder = true, "Use encoder mode")
                 .Command("train", () => command = Command.Train, "Train new MLP")
                     .DefaultParameter("output", path => outputPath = path, "Output file to save trained mlp")
                     .Parameter("sizes", sizes => layersSizes = JsonConvert.DeserializeObject<int[]>(sizes), "Number of layer and its sizes, default to [70,5,10]", "Sizes")
@@ -117,6 +115,12 @@ namespace CLI
                     .Parameter("mlp", json => nnJsonPath = json, "MLP data in json format", "Json")
                     .Parameter("output", path => outputPath = path, "Path to save features")
                     .Parameter("width", val => imageWidth = int.Parse(val), "Input width to display feature as image")
+                .Command("encoder", () => command = Command.Encoder, "Use encoder mode")
+                    .Parameter("output", path => outputPath = path, "Path to save decoded image")
+                    .Parameter("mlp", json => nnJsonPath = json, "Encoder data in json format", "Json")
+                    .Parameter("image", path => imagePath = path, "Path to image", "Path to image")
+                    .Option("n", () => normalize = true, "Normalize input")
+                    .Option("normalize", () => normalize = true, "Normalize input")
                 .End();
 
             commandLine.Run(args);
@@ -351,6 +355,40 @@ namespace CLI
                             }
                         }
 
+                        break;
+                    }
+                case Command.Encoder:
+                    {
+                        Encoder.Network.Encoder encoder;
+                        try
+                        {
+                            var json = File.ReadAllText(nnJsonPath);
+                            encoder = JsonConvert.DeserializeObject<Encoder.Network.Encoder>(json);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            Console.WriteLine($"Path is invalid");
+                            return;
+                        }
+
+                        if (!string.IsNullOrEmpty(imagePath))
+                        {
+                            if (!File.Exists(imagePath))
+                            {
+                                Console.WriteLine($"File {imagePath} does not exist!");
+                                return;
+                            }
+
+                            var image = MnistParser.ReadImage(imagePath, normalize, true);
+
+                            var recreatedData = encoder.Compute(image.Values);
+
+                            var recreatedImage = MnistViewer.ToImage(recreatedData, imageWidth);
+
+                            File.Copy(imagePath, "original.png", true);
+                            recreatedImage.Save($"decoded.png", ImageFormat.Png);
+                        }
                         break;
                     }
                 default:
