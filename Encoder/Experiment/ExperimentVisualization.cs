@@ -7,10 +7,26 @@ namespace Encoder.Experiment
     public static class ExperimentVisualization
     {
         public static void GenerateEvaluationPlot(
+            TrainingResult trainingResult,
+            string path)
+        {
+            IList<DataPoint>[] series = new IList<DataPoint>[1];
+            path += ".png";
+
+            series[0] = new List<DataPoint>(trainingResult.Evaluations.Length);
+            for (int epoch = 0; epoch < trainingResult.Evaluations.Length; epoch++)
+            {
+                var evaluation = trainingResult.Evaluations[epoch];
+                var dataPoint = new DataPoint(epoch, evaluation.Percentage);
+                series[0].Add(dataPoint);
+            }
+
+            Charter.Charter.GeneratePlot(series, path, 0, 100);
+        }
+
+        public static void GenerateEvaluationPlot(
             TrainingResult[] trainingResults,
-            string path,
-            int min,
-            int max)
+            string path)
         {
             IList<DataPoint>[] series = new IList<DataPoint>[trainingResults.Length];
             path += ".png";
@@ -28,7 +44,25 @@ namespace Encoder.Experiment
                 }
             }
 
-            Charter.Charter.GeneratePlot(series, path, min, max);
+            Charter.Charter.GeneratePlot(series, path, 0, 100);
+        }
+
+        public static void GenerateErrorPlot(
+            TrainingResult trainingResult,
+            string path)
+        {
+            IList<DataPoint>[] series = new IList<DataPoint>[1];
+            path += ".png";
+
+            series[0] = new List<DataPoint>(trainingResult.EpochErrors.Length);
+            for (int epoch = 0; epoch < trainingResult.EpochErrors.Length; epoch++)
+            {
+                var error = trainingResult.EpochErrors[epoch];
+                var dataPoint = new DataPoint(epoch, error);
+                series[0].Add(dataPoint);
+            }
+
+            Charter.Charter.GeneratePlot(series, path);
         }
 
         public static void GenerateErrorPlot(

@@ -84,7 +84,7 @@ namespace Encoder.Experiment
                 File.WriteAllText(path, log.ToString());
 
                 #region dump plot
-                ExperimentVisualization.GenerateEvaluationPlot(trainingResponses, logPath + "_" + learningRate, 0, 100);
+                ExperimentVisualization.GenerateEvaluationPlot(trainingResponses, logPath + "_" + learningRate);
                 ExperimentVisualization.GenerateErrorPlot(trainingResponses, logPath + "_error_" + learningRate);
                 #endregion
             }
@@ -161,7 +161,7 @@ namespace Encoder.Experiment
                 File.WriteAllText(path, log.ToString());
 
                 #region dump plot
-                ExperimentVisualization.GenerateEvaluationPlot(trainingResponses, logPath + "_" + initialWeightsRange, 0, 100);
+                ExperimentVisualization.GenerateEvaluationPlot(trainingResponses, logPath + "_" + initialWeightsRange);
                 ExperimentVisualization.GenerateErrorPlot(trainingResponses, logPath + "_" + initialWeightsRange);
                 #endregion
             }
@@ -238,7 +238,7 @@ namespace Encoder.Experiment
                 File.WriteAllText(path, log.ToString());
 
                 #region dump plot
-                ExperimentVisualization.GenerateEvaluationPlot(trainingResponses, logPath + "_" + activationFunction, 0, 100);
+                ExperimentVisualization.GenerateEvaluationPlot(trainingResponses, logPath + "_" + activationFunction);
                 ExperimentVisualization.GenerateErrorPlot(trainingResponses, logPath + "_" + activationFunction);
                 #endregion
             }
@@ -314,7 +314,7 @@ namespace Encoder.Experiment
                 File.WriteAllText(path, log.ToString());
 
                 #region dump plot
-                ExperimentVisualization.GenerateEvaluationPlot(trainingResponses, logPath + "_" + momentum, 0, 100);
+                ExperimentVisualization.GenerateEvaluationPlot(trainingResponses, logPath + "_" + momentum);
                 ExperimentVisualization.GenerateErrorPlot(trainingResponses, logPath + "_" + momentum);
                 #endregion
             }

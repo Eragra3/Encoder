@@ -93,8 +93,8 @@ namespace Encoder.Network
             var isVerbose = trainingModel.IsVerbose;
             var evaluateOnEachEpoch = trainingModel.EvaluateOnEachEpoch;
 
-            IList<double> epochErrors = new List<double> { 0 };
-            var epochEvaluations = new List<EvaluationModel>();
+            IList<double> epochErrors = new List<double>(maxEpochs);
+            var epochEvaluations = new List<EvaluationModel>(maxEpochs);
 
             var errorSum = double.PositiveInfinity;
             var epoch = 0;
@@ -162,7 +162,7 @@ namespace Encoder.Network
                     var solution = bpResult.Solution;
                     var expectedSolution = item.ExpectedSolution;
 
-                    errorSum += solution.Map2((y, o) => Math.Abs(y - o), expectedSolution).Sum();
+                    errorSum += solution.Map2((y, o) => Math.Pow(y - o, 2), expectedSolution).Sum();
                 }
                 errorSum /= batchSize;
 

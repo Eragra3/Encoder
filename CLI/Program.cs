@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Encoder;
@@ -31,6 +32,7 @@ namespace CLI
             string imagePath = "";
             bool print = false;
             bool evaluate = false;
+            bool dump = false;
 
             bool normalize = false;
 
@@ -73,6 +75,8 @@ namespace CLI
                     .Parameter("normal", val => normalStDev = double.Parse(val, CultureInfo.InvariantCulture), "Initial weights normal distribution standard deviation")
                     .Option("v", () => isVerbose = true, "Explain what is happening")
                     .Option("verbose", () => isVerbose = true, "Explain what is happening")
+                    .Option("d", () => dump  = true, "Dump training data")
+                    .Option("dump", () => dump = true, "Dump training data")
                     .Option("n", () => normalize = true, "Normalize input")
                     .Option("normalize", () => normalize = true, "Normalize input")
                 .Command("view", () => command = Command.View, "Show MNIST image")
@@ -129,7 +133,7 @@ namespace CLI
                             batchSize,
                             activationFunction,
                             normalStDev,
-                            false,
+                            dump,
                             normalize
                             );
 
@@ -138,6 +142,13 @@ namespace CLI
                         var mlp = trainingResult.NeuralNetwork;
 
                         File.WriteAllText(outputPath, mlp.ToJson());
+
+                        if (dump)
+                        {
+                            var directory = new FileInfo(outputPath).Directory?.FullName ?? "";
+                            ExperimentVisualization.GenerateErrorPlot(trainingResult, directory + "/error");
+                            ExperimentVisualization.GenerateEvaluationPlot(trainingResult, directory + "/evaluation");
+                        }
 
                         break;
                     }
