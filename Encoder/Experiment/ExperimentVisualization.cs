@@ -10,11 +10,11 @@ namespace Encoder.Experiment
             TrainingResult trainingResult,
             string path)
         {
-            IList<DataPoint>[] series = new IList<DataPoint>[1];
+            var series = new IList<DataPoint>[1];
             path += ".png";
 
             series[0] = new List<DataPoint>(trainingResult.Evaluations.Length);
-            for (int epoch = 0; epoch < trainingResult.Evaluations.Length; epoch++)
+            for (var epoch = 0; epoch < trainingResult.Evaluations.Length; epoch++)
             {
                 var evaluation = trainingResult.Evaluations[epoch];
                 var dataPoint = new DataPoint(epoch, evaluation.Percentage);
@@ -28,15 +28,15 @@ namespace Encoder.Experiment
             TrainingResult[] trainingResults,
             string path)
         {
-            IList<DataPoint>[] series = new IList<DataPoint>[trainingResults.Length];
+            var series = new IList<DataPoint>[trainingResults.Length];
             path += ".png";
 
-            for (int index = 0; index < trainingResults.Length; index++)
+            for (var index = 0; index < trainingResults.Length; index++)
             {
                 var trainingResult = trainingResults[index];
                 series[index] = new List<DataPoint>(trainingResult.Evaluations.Length);
                 var oneSeries = series[index];
-                for (int epoch = 0; epoch < trainingResult.Evaluations.Length; epoch++)
+                for (var epoch = 0; epoch < trainingResult.Evaluations.Length; epoch++)
                 {
                     var evaluation = trainingResult.Evaluations[epoch];
                     var dataPoint = new DataPoint(epoch, evaluation.Percentage);
@@ -51,11 +51,11 @@ namespace Encoder.Experiment
             TrainingResult trainingResult,
             string path)
         {
-            IList<DataPoint>[] series = new IList<DataPoint>[1];
+            var series = new IList<DataPoint>[1];
             path += ".png";
 
             series[0] = new List<DataPoint>(trainingResult.EpochErrors.Length);
-            for (int epoch = 0; epoch < trainingResult.EpochErrors.Length; epoch++)
+            for (var epoch = 0; epoch < trainingResult.EpochErrors.Length; epoch++)
             {
                 var error = trainingResult.EpochErrors[epoch];
                 var dataPoint = new DataPoint(epoch, error);
@@ -69,15 +69,15 @@ namespace Encoder.Experiment
             TrainingResult[] trainingResults,
             string path)
         {
-            IList<DataPoint>[] series = new IList<DataPoint>[trainingResults.Length];
+            var series = new IList<DataPoint>[trainingResults.Length];
             path += ".png";
 
-            for (int index = 0; index < trainingResults.Length; index++)
+            for (var index = 0; index < trainingResults.Length; index++)
             {
                 var trainingResult = trainingResults[index];
                 series[index] = new List<DataPoint>(trainingResult.EpochErrors.Length);
                 var oneSeries = series[index];
-                for (int epoch = 0; epoch < trainingResult.EpochErrors.Length; epoch++)
+                for (var epoch = 0; epoch < trainingResult.EpochErrors.Length; epoch++)
                 {
                     var error = trainingResult.EpochErrors[epoch];
                     var dataPoint = new DataPoint(epoch, error);

@@ -15,7 +15,7 @@ namespace Charter
             using (var ch = new Chart())
             {
                 ch.ChartAreas.Add(new ChartArea());
-                for (int i = 0; i < seriesArray.Length; i++)
+                for (var i = 0; i < seriesArray.Length; i++)
                 {
                     var series = seriesArray[i];
                     var s = new Series();

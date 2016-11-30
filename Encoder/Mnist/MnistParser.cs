@@ -13,33 +13,41 @@ namespace Encoder.Mnist
     {
         public static readonly char[] FileSeparators = { '/', '\\' };
 
-        public static MnistModel ReadImage(string path, bool normalize)
+        public static MnistModel ReadImage(string path, bool normalize, bool trainAsEncoder)
         {
-            Bitmap bitmap = new Bitmap(path);
+            var bitmap = new Bitmap(path);
 
             var fileName = path.Substring(path.LastIndexOfAny(FileSeparators) + 1);
             var label = int.Parse(fileName[0].ToString());
 
-            var values = new DenseVector(bitmap.Height * bitmap.Width);
+            var values = new SparseVector(bitmap.Height * bitmap.Width);
 
-            for (int i = 0; i < bitmap.Height; i++)
+            for (var i = 0; i < bitmap.Height; i++)
             {
-                for (int j = 0; j < bitmap.Width; j++)
+                for (var j = 0; j < bitmap.Width; j++)
                 {
                     {
                         var color = bitmap.GetPixel(j, i);
 
-                        int gray = (int)(color.R * 0.2126 + color.G * 0.7152 + color.B * 0.0722);
+                        var gray = (int)(color.R * 0.2126 + color.G * 0.7152 + color.B * 0.0722);
 
                         values[j + i * bitmap.Width] = 1 - gray / 255.0;
                     }
                 }
             }
 
-            var solution = new DenseVector(10)
+            Vector solution;
+            if (trainAsEncoder)
             {
-                [label] = 1.0
-            };
+                solution = values;
+            }
+            else
+            {
+                solution = new DenseVector(10)
+                {
+                    [label] = 1.0
+                };
+            }
 
 
 
@@ -63,7 +71,7 @@ namespace Encoder.Mnist
             return image;
         }
 
-        public static MnistModel[] ReadAll(string pathToDirectory, bool normalize)
+        public static MnistModel[] ReadAll(string pathToDirectory, bool normalize, bool trainAsEncoder)
         {
             var directoryInfo = new DirectoryInfo(pathToDirectory);
 
@@ -71,9 +79,9 @@ namespace Encoder.Mnist
             var count = files.Length;
             var models = new MnistModel[count];
 
-            for (int i = 0; i < files.Length; i++)
+            for (var i = 0; i < files.Length; i++)
             {
-                models[i] = ReadImage(files[i].FullName, normalize);
+                models[i] = ReadImage(files[i].FullName, normalize, trainAsEncoder);
             }
 
             return models;

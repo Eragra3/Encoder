@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace Encoder.Mnist
@@ -15,7 +13,7 @@ namespace Encoder.Mnist
             var sb = new StringBuilder();
             const string separator = "|";
 
-            for (int i = 0; i < model.Count; i++)
+            for (var i = 0; i < model.Count; i++)
             {
                 sb.Append(Math.Floor(model[i] * 255).ToString(CultureInfo.InvariantCulture).PadRight(3, ' '));
 
@@ -25,11 +23,29 @@ namespace Encoder.Mnist
             return sb.ToString();
         }
 
+        public static Image ToImage(Vector<double> values, int width)
+        {
+            var image = new Bitmap(width, values.Count / width);
+
+            for (var i = 0; i < values.Count; i++)
+            {
+                var x = i % width;
+                var y = i / width;
+                var c = values[i];
+                c *= 255;
+                var cInt = (int)c;
+                var color = Color.FromArgb(cInt, cInt, cInt);
+                image.SetPixel(x, y, color);
+            }
+
+            return image;
+        }
+
         public static string Print(Vector<double> model, int width)
         {
             var sb = new StringBuilder();
 
-            for (int i = 0; i < model.Count; i++)
+            for (var i = 0; i < model.Count; i++)
             {
                 if (model[i] > 0.75) sb.Append("@");
                 else if (model[i] > 0.2) sb.Append("+");

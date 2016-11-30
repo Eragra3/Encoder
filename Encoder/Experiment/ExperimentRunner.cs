@@ -24,7 +24,7 @@ namespace Encoder.Experiment
 
             Directory.CreateDirectory(logPath.Split('/')[0]);
 
-            for (int i = 0; i < learningRates.Length; i++)
+            for (var i = 0; i < learningRates.Length; i++)
             {
                 var learningRate = learningRates[i];
 
@@ -44,13 +44,14 @@ namespace Encoder.Experiment
                     options.ActivationFunction,
                     options.InitialWeightsRange,
                     true,
-                    options.NormalizeInput
+                    options.NormalizeInput,
+                    options.IsEncoder
                     );
 
                 var trainingResponses = new TrainingResult[repetitions];
 
                 //gather data
-                for (int j = 0; j < repetitions; j++)
+                for (var j = 0; j < repetitions; j++)
                 {
                     var mlp = new NeuralNetwork(options.ActivationFunction, options.InitialWeightsRange, options.Sizes);
 
@@ -63,18 +64,18 @@ namespace Encoder.Experiment
 
                 //File.Create(path);
 
-                StringBuilder log = new StringBuilder("sep=|");
+                var log = new StringBuilder("sep=|");
                 log.AppendLine();
                 log.Append("epoch");
-                for (int j = 0; j < trainingResponses.Length; j++)
+                for (var j = 0; j < trainingResponses.Length; j++)
                 {
                     log.Append("|evaluation_" + j + "|error_" + j);
                 }
                 log.AppendLine();
-                for (int j = 0; j < trainingResponses[0].Epochs + 1; j++)
+                for (var j = 0; j < trainingResponses[0].Epochs + 1; j++)
                 {
                     log.Append(j);
-                    for (int n = 0; n < trainingResponses.Length; n++)
+                    for (var n = 0; n < trainingResponses.Length; n++)
                     {
                         var result = trainingResponses[n];
                         log.Append("|" + result.Evaluations[j].Percentage + "|" + result.EpochErrors[j]);
@@ -103,7 +104,7 @@ namespace Encoder.Experiment
 
             Directory.CreateDirectory(logPath.Split('/')[0]);
 
-            for (int i = 0; i < initialWeightsRanges.Length; i++)
+            for (var i = 0; i < initialWeightsRanges.Length; i++)
             {
                 var initialWeightsRange = initialWeightsRanges[i];
 
@@ -123,13 +124,14 @@ namespace Encoder.Experiment
                     options.ActivationFunction,
                     initialWeightsRange,
                     true,
-                    options.NormalizeInput
+                    options.NormalizeInput,
+                    options.IsEncoder
                     );
 
                 var trainingResponses = new TrainingResult[repetitions];
 
                 //gather data
-                for (int j = 0; j < repetitions; j++)
+                for (var j = 0; j < repetitions; j++)
                 {
                     var trainingResponse = MnistTrainer.TrainOnMnist(trainingOptions);
                     trainingResponses[j] = trainingResponse;
@@ -140,18 +142,18 @@ namespace Encoder.Experiment
 
                 //File.Create(path);
 
-                StringBuilder log = new StringBuilder("sep=|");
+                var log = new StringBuilder("sep=|");
                 log.AppendLine();
                 log.Append("epoch");
-                for (int j = 0; j < trainingResponses.Length; j++)
+                for (var j = 0; j < trainingResponses.Length; j++)
                 {
                     log.Append("|evaluation_" + j + "|error_" + j);
                 }
                 log.AppendLine();
-                for (int j = 0; j < trainingResponses[0].Epochs + 1; j++)
+                for (var j = 0; j < trainingResponses[0].Epochs + 1; j++)
                 {
                     log.Append(j);
-                    for (int n = 0; n < trainingResponses.Length; n++)
+                    for (var n = 0; n < trainingResponses.Length; n++)
                     {
                         var result = trainingResponses[n];
                         log.Append("|" + result.Evaluations[j].Percentage + "|" + result.EpochErrors[j]);
@@ -180,7 +182,7 @@ namespace Encoder.Experiment
 
             Directory.CreateDirectory(logPath.Split('/')[0]);
 
-            for (int i = 0; i < activatonFunctions.Length; i++)
+            for (var i = 0; i < activatonFunctions.Length; i++)
             {
                 var activationFunction = activatonFunctions[i];
 
@@ -200,13 +202,14 @@ namespace Encoder.Experiment
                     activationFunction,
                     options.InitialWeightsRange,
                     true,
-                    options.NormalizeInput
+                    options.NormalizeInput,
+                    options.IsEncoder
                     );
 
                 var trainingResponses = new TrainingResult[repetitions];
 
                 //gather data
-                for (int j = 0; j < repetitions; j++)
+                for (var j = 0; j < repetitions; j++)
                 {
                     var trainingResponse = MnistTrainer.TrainOnMnist(trainingOptions);
                     trainingResponses[j] = trainingResponse;
@@ -217,18 +220,18 @@ namespace Encoder.Experiment
 
                 //File.Create(path);
 
-                StringBuilder log = new StringBuilder("sep=|");
+                var log = new StringBuilder("sep=|");
                 log.AppendLine();
                 log.Append("epoch");
-                for (int j = 0; j < trainingResponses.Length; j++)
+                for (var j = 0; j < trainingResponses.Length; j++)
                 {
                     log.Append("|evaluation_" + j + "|error_" + j);
                 }
                 log.AppendLine();
-                for (int j = 0; j < trainingResponses[0].Epochs + 1; j++)
+                for (var j = 0; j < trainingResponses[0].Epochs + 1; j++)
                 {
                     log.Append(j);
-                    for (int n = 0; n < trainingResponses.Length; n++)
+                    for (var n = 0; n < trainingResponses.Length; n++)
                     {
                         var result = trainingResponses[n];
                         log.Append("|" + result.Evaluations[j].Percentage + "|" + result.EpochErrors[j]);
@@ -256,7 +259,7 @@ namespace Encoder.Experiment
 
             Directory.CreateDirectory(logPath.Split('/')[0]);
 
-            for (int i = 0; i < momentums.Length; i++)
+            for (var i = 0; i < momentums.Length; i++)
             {
                 var momentum = momentums[i];
 
@@ -276,13 +279,14 @@ namespace Encoder.Experiment
                     options.ActivationFunction,
                     options.InitialWeightsRange,
                     true,
-                    options.NormalizeInput
+                    options.NormalizeInput,
+                    options.IsEncoder
                     );
 
                 var trainingResponses = new TrainingResult[repetitions];
 
                 //gather data
-                for (int j = 0; j < repetitions; j++)
+                for (var j = 0; j < repetitions; j++)
                 {
                     var trainingResponse = MnistTrainer.TrainOnMnist(trainingOptions);
                     trainingResponses[j] = trainingResponse;
@@ -293,18 +297,18 @@ namespace Encoder.Experiment
 
                 //File.Create(path);
 
-                StringBuilder log = new StringBuilder("sep=|");
+                var log = new StringBuilder("sep=|");
                 log.AppendLine();
                 log.Append("epoch");
-                for (int j = 0; j < trainingResponses.Length; j++)
+                for (var j = 0; j < trainingResponses.Length; j++)
                 {
                     log.Append("|evaluation_" + j + "|error_" + j);
                 }
                 log.AppendLine();
-                for (int j = 0; j < trainingResponses[0].Epochs + 1; j++)
+                for (var j = 0; j < trainingResponses[0].Epochs + 1; j++)
                 {
                     log.Append(j);
-                    for (int n = 0; n < trainingResponses.Length; n++)
+                    for (var n = 0; n < trainingResponses.Length; n++)
                     {
                         var result = trainingResponses[n];
                         log.Append("|" + result.Evaluations[j].Percentage + "|" + result.EpochErrors[j]);

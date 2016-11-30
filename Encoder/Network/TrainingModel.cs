@@ -27,5 +27,7 @@ namespace Encoder.Network
         public double Momentum { get; set; }
 
         public bool EvaluateOnEachEpoch { get; set; }
+
+        public bool IsEncoder { get; set; }
     }
 }

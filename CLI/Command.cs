@@ -12,6 +12,7 @@ namespace CLI
         Test,
         View,
         Help,
-        Experiment
+        Experiment,
+        Features
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using Encoder;
 using Encoder.Experiment;
 using Encoder.Mnist;
 using Encoder.Network;
+using MathNet.Numerics.LinearAlgebra;
 using Newtonsoft.Json;
 using TTRider.FluidCommandLine;
 
@@ -25,31 +27,34 @@ namespace CLI
                 Console.Error.WriteLine("Could not use MKL native library");
             }
 
-            Command command = Command.Help;
-            string nnJsonPath = "";
-            bool isVerbose = false;
-            string outputPath = "";
-            string imagePath = "";
-            bool print = false;
-            bool evaluate = false;
-            bool dump = false;
+            var command = Command.Help;
+            var nnJsonPath = "";
+            var isVerbose = false;
+            var outputPath = "";
+            var imagePath = "";
+            var print = false;
+            var evaluate = false;
+            var dump = false;
+            var isEncoder = false;
 
-            bool normalize = false;
+            var normalize = false;
 
             //mlp params
             int[] layersSizes = { 70, 200, 10 };
-            double learningRate = 0.5;
-            double momentum = 0.9;
+            var learningRate = 0.5;
+            var momentum = 0.9;
             double errorThreshold = 0;
-            int batchSize = 20;
-            ActivationFunction activationFunction = ActivationFunction.Sigmoid;
-            double normalStDev = 0.5;
+            var batchSize = 20;
+            var activationFunction = ActivationFunction.Sigmoid;
+            var normalStDev = 0.5;
 
-            int maxEpochs = 200;
+            var imageWidth = 10;
+
+            var maxEpochs = 200;
 
             string experimentValues = null;
-            Experiment experiment = Experiment.LearningRate;
-            int repetitions = 3;
+            var experiment = Experiment.LearningRate;
+            var repetitions = 3;
 
             ICommandLine commandLine = CommandLine
                 .Help("h")
@@ -63,6 +68,8 @@ namespace CLI
                     .Option("evaluate", () => evaluate = true, "Evaluate using MNIST dataset")
                     .Option("n", () => normalize = true, "Normalize input")
                     .Option("normalize", () => normalize = true, "Normalize input")
+                    .Option("e", () => isEncoder = true, "Use encoder mode")
+                    .Option("encoder", () => isEncoder = true, "Use encoder mode")
                 .Command("train", () => command = Command.Train, "Train new MLP")
                     .DefaultParameter("output", path => outputPath = path, "Output file to save trained mlp")
                     .Parameter("sizes", sizes => layersSizes = JsonConvert.DeserializeObject<int[]>(sizes), "Number of layer and its sizes, default to [70,5,10]", "Sizes")
@@ -79,6 +86,8 @@ namespace CLI
                     .Option("dump", () => dump = true, "Dump training data")
                     .Option("n", () => normalize = true, "Normalize input")
                     .Option("normalize", () => normalize = true, "Normalize input")
+                    .Option("e", () => isEncoder = true, "Use encoder mode")
+                    .Option("encoder", () => isEncoder = true, "Use encoder mode")
                 .Command("view", () => command = Command.View, "Show MNIST image")
                     .DefaultParameter("path", path => imagePath = path, "Path to image")
                     .Option("p", () => print = true, "Display grayscale interpretation")
@@ -102,6 +111,12 @@ namespace CLI
                     .Option("verbose", () => isVerbose = true, "Explain what is happening")
                     .Option("n", () => normalize = true, "Normalize input")
                     .Option("normalize", () => normalize = true, "Normalize input")
+                    .Option("e", () => isEncoder = true, "Use encoder mode")
+                    .Option("encoder", () => isEncoder = true, "Use encoder mode")
+                .Command("features", () => command = Command.Features, "Print features")
+                    .Parameter("mlp", json => nnJsonPath = json, "MLP data in json format", "Json")
+                    .Parameter("output", path => outputPath = path, "Path to save features")
+                    .Parameter("width", val => imageWidth = int.Parse(val), "Input width to display feature as image")
                 .End();
 
             commandLine.Run(args);
@@ -134,7 +149,8 @@ namespace CLI
                             activationFunction,
                             normalStDev,
                             dump,
-                            normalize
+                            normalize,
+                            isEncoder
                             );
 
                         var trainingResult = MnistTrainer.TrainOnMnist(options);
@@ -150,7 +166,11 @@ namespace CLI
                             var fileName = Path.GetFileNameWithoutExtension(outputPath);
                             directory += $"/{fileName}_";
                             ExperimentVisualization.GenerateErrorPlot(trainingResult, $"{directory}error");
-                            ExperimentVisualization.GenerateEvaluationPlot(trainingResult, $"{directory}evaluation");
+
+                            if (!isEncoder)
+                            {
+                                ExperimentVisualization.GenerateEvaluationPlot(trainingResult, $"{directory}evaluation");
+                            }
                         }
 
                         break;
@@ -178,7 +198,7 @@ namespace CLI
                                 return;
                             }
 
-                            var image = MnistParser.ReadImage(imagePath, normalize);
+                            var image = MnistParser.ReadImage(imagePath, normalize, isEncoder);
 
                             var decision = mlp.Compute(image.Values);
 
@@ -188,7 +208,7 @@ namespace CLI
 
                         if (evaluate)
                         {
-                            var testData = MnistParser.ReadAll(TEST_DATA_PATH, normalize);
+                            var testData = MnistParser.ReadAll(TEST_DATA_PATH, normalize, isEncoder);
 
                             var evaluation = mlp.Evaluate(testData);
 
@@ -211,7 +231,7 @@ namespace CLI
                             return;
                         }
 
-                        var model = MnistParser.ReadImage(imagePath, normalize);
+                        var model = MnistParser.ReadImage(imagePath, normalize, isEncoder);
 
                         var modelDump = MnistViewer.Dump(model);
                         Console.WriteLine(modelDump);
@@ -242,7 +262,8 @@ namespace CLI
                             activationFunction,
                             normalStDev,
                             true,
-                            normalize
+                            normalize,
+                            isEncoder
                             );
 
                         switch (experiment)
@@ -294,8 +315,44 @@ namespace CLI
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
+                        break;
                     }
-                    break;
+                case Command.Features:
+                    {
+                        NeuralNetwork mlp;
+                        try
+                        {
+                            var json = File.ReadAllText(nnJsonPath);
+                            mlp = JsonConvert.DeserializeObject<NeuralNetwork>(json);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            Console.WriteLine($"Path is invalid");
+                            return;
+                        }
+
+                        var layerFeatures = mlp.GetFeatures();
+
+                        Directory.Delete(outputPath, true);
+                        Directory.CreateDirectory(outputPath);
+                        for (int layerIndex = 0; layerIndex < layerFeatures.Length; layerIndex++)
+                        {
+                            var features = layerFeatures[layerIndex];
+                            var path = $"{outputPath}/{layerIndex}";
+                            Directory.CreateDirectory(path);
+
+                            for (int i = 0; i < features.Length; i++)
+                            {
+                                var feature = features[i];
+                                var image = MnistViewer.ToImage(feature, imageWidth);
+
+                                image.Save($"{path}/{i}.png", ImageFormat.Png);
+                            }
+                        }
+
+                        break;
+                    }
                 default:
                     throw new ArgumentOutOfRangeException();
             }

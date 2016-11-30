@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Diagnostics;
 using Encoder.Serialization;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
@@ -33,17 +34,16 @@ namespace Encoder.Network
         public Vector<double> Biases;
 
         [JsonProperty]
-        private readonly int _inputsCount;
+        protected readonly int _inputsCount;
         [JsonProperty]
-        private readonly int _neuronsCount;
+        protected readonly int _neuronsCount;
 
         public ActivationFunction CurrentActivationFunction { get; }
 
         public readonly double InitialWeightsRange;
 
-        private IContinuousDistribution _distribution;
-
-        private IContinuousDistribution CurrentDistribution
+        protected IContinuousDistribution _distribution;
+        protected IContinuousDistribution CurrentDistribution
         {
             get
             {
@@ -149,6 +149,25 @@ namespace Encoder.Network
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public Vector<double>[] GetFeatures()
+        {
+            var allFeatures = new Vector<double>[_neuronsCount];
+
+            for (var i = 0; i < Weights.RowCount; i++)
+            {
+                var norm = Weights.Row(i).L2Norm();
+                var features = Weights.Row(i).Divide(norm);
+
+                var max = features.Maximum();
+                var min = features.Minimum();
+                features.MapInplace(v => (v - min) / (max - min));
+
+                allFeatures[i] = features;
+            }
+
+            return allFeatures;
         }
     }
 }

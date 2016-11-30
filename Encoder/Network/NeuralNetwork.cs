@@ -19,7 +19,23 @@ namespace Encoder.Network
         private readonly OutputLayer _outputLayer;
 
         //all layers except input
-        private readonly HiddenLayer[] _layers;
+        private HiddenLayer[] _layers;
+        private HiddenLayer[] Layers
+        {
+            get
+            {
+                if (_layers != null) return _layers;
+
+                _layers = new HiddenLayer[_sizes.Length - 1];
+                for (var i = 0; i < _hiddenLayers.Length; i++)
+                {
+                    _layers[i] = _hiddenLayers[i];
+                }
+                _layers[_layers.Length - 1] = _outputLayer;
+
+                return _layers;
+            }
+        }
 
         [JsonProperty]
         private readonly int[] _sizes;
@@ -56,13 +72,6 @@ namespace Encoder.Network
                 sizes[length - 1],
                 activationFunction,
                 initialWeightsRange);
-
-            _layers = new HiddenLayer[_sizes.Length - 1];
-            for (int i = 0; i < _hiddenLayers.Length; i++)
-            {
-                _layers[i] = _hiddenLayers[i];
-            }
-            _layers[_layers.Length - 1] = _outputLayer;
         }
 
         public int Compute(Vector<double> input)
@@ -89,6 +98,7 @@ namespace Encoder.Network
             var batchSize = trainingModel.BatchSize;
             var learningRate = trainingModel.LearningRate;
             var momentum = trainingModel.Momentum;
+            var isEncoder = trainingModel.IsEncoder;
 
             var isVerbose = trainingModel.IsVerbose;
             var evaluateOnEachEpoch = trainingModel.EvaluateOnEachEpoch;
@@ -105,7 +115,7 @@ namespace Encoder.Network
             var nablaBiases = new Vector<double>[layersCount];
             for (var i = 0; i < layersCount; i++)
             {
-                var nextLayer = _layers[i];
+                var nextLayer = Layers[i];
                 nablaBiases[i] = nextLayer.GetNewBiasesVector(true);
                 nablaWeights[i] = nextLayer.GetNewWeightsMatrix(true);
             }
@@ -113,8 +123,8 @@ namespace Encoder.Network
 
             if (isVerbose)
             {
-                var activationFunctions = _layers.Select(l => l.CurrentActivationFunction.ToString()).ToArray();
-                var distributions = _layers.Select(l => l.InitialWeightsRange.ToString("#0.00")).ToArray();
+                var activationFunctions = Layers.Select(l => l.CurrentActivationFunction.ToString()).ToArray();
+                var distributions = Layers.Select(l => l.InitialWeightsRange.ToString("#0.00")).ToArray();
                 Console.WriteLine("Starting with params:");
                 Console.WriteLine($"\tsizes- {JsonConvert.SerializeObject(_sizes)}");
                 Console.WriteLine($"\tlearning rate - {learningRate}");
@@ -128,7 +138,7 @@ namespace Encoder.Network
             var prevWeightsChange = new Matrix<double>[layersCount];
             var prevBiasChange = new Vector<double>[layersCount];
 
-            if (isVerbose)
+            if (isVerbose && !isEncoder)
             {
                 var initialPercentage = Evaluate(testSet).Percentage;
                 Console.WriteLine($"Initial state, {initialPercentage.ToString("#0.00")}");
@@ -169,15 +179,15 @@ namespace Encoder.Network
                 #region update parameters
                 for (var i = 0; i < layersCount; i++)
                 {
-                    var weights = _layers[i].Weights;
+                    var weights = Layers[i].Weights;
                     var weightsChange = learningRate * nablaWeights[i];
                     if (prevWeightsChange[i] != null) weightsChange += momentum * prevWeightsChange[i];
-                    _layers[i].Weights = weights - weightsChange;
+                    Layers[i].Weights = weights - weightsChange;
 
-                    var biases = _layers[i].Biases;
+                    var biases = Layers[i].Biases;
                     var biasesChange = learningRate * nablaBiases[i];
                     if (prevBiasChange[i] != null) biasesChange += momentum * prevBiasChange[i];
-                    _layers[i].Biases = biases - biasesChange;
+                    Layers[i].Biases = biases - biasesChange;
 
                     prevWeightsChange[i] = weightsChange;
                     prevBiasChange[i] = biasesChange;
@@ -193,14 +203,18 @@ namespace Encoder.Network
 
                 if (isVerbose)
                 {
-                    var percentage = (epochEvaluation ?? Evaluate(testSet)).Percentage;
+                    var percentage = isEncoder
+                        ? 0
+                        : (epochEvaluation ?? Evaluate(testSet)).Percentage;
                     Console.WriteLine($"Epoch - {epoch}," +
                                       $" error - {errorSum.ToString("#0.000")}," +
                                       $" test - {percentage.ToString("#0.00")}");
                 }
 
                 #region dump data
-                var eval = (epochEvaluation ?? Evaluate(testSet)).Percentage;
+                var eval = isEncoder
+                        ? 0
+                        : (epochEvaluation ?? Evaluate(testSet)).Percentage;
 
                 log.AppendLine(epoch + "|" + eval + "|" + errorSum);
                 #endregion
@@ -297,7 +311,7 @@ namespace Encoder.Network
         {
             var correctSolutions = 0;
 
-            for (int i = 0; i < testData.Length; i++)
+            for (var i = 0; i < testData.Length; i++)
             {
                 var model = testData[i];
 
@@ -313,6 +327,16 @@ namespace Encoder.Network
             };
 
             return result;
+        }
+
+        public Vector<double>[][] GetFeatures()
+        {
+            var features = new Vector<double>[1][];
+
+            features[0] = _hiddenLayers[0].GetFeatures();
+            //features[1] = _outputLayer.GetFeatures();
+
+            return features;
         }
 
         public string ToJson()

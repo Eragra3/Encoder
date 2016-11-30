@@ -22,6 +22,7 @@ namespace Encoder.Mnist
         {
             var isVerbose = options.IsVerbose;
             var normalize = options.NormalizeInput;
+            var isEncoder = options.IsEncoder;
 
             #region dump used params
             //lel
@@ -35,19 +36,19 @@ namespace Encoder.Mnist
                 options.Sizes);
             if (_trainingSetPath != options.TrainingPath || _trainingSet == null)
             {
-                _trainingSet = MnistParser.ReadAll(options.TrainingPath, normalize);
+                _trainingSet = MnistParser.ReadAll(options.TrainingPath, normalize, isEncoder);
                 _trainingSetPath = options.TrainingPath;
             }
             var trainingSet = _trainingSet;
             if (_testSetPath != options.TestPath || _testSet == null)
             {
-                _testSet = MnistParser.ReadAll(options.TestPath, normalize);
+                _testSet = MnistParser.ReadAll(options.TestPath, normalize, isEncoder);
                 _testSetPath = options.TestPath;
             }
             var testSet = _testSet;
             if (_validationSetPath != options.ValidationPath || _validationSet == null)
             {
-                _validationSet = MnistParser.ReadAll(options.ValidationPath, normalize);
+                _validationSet = MnistParser.ReadAll(options.ValidationPath, normalize, isEncoder);
                 _validationSetPath = options.ValidationPath;
             }
             var validationSet = _validationSet;
@@ -63,7 +64,8 @@ namespace Encoder.Mnist
                 BatchSize = options.BatchSize,
                 LearningRate = options.LearningRate,
                 Momentum = options.Momentum,
-                EvaluateOnEachEpoch = options.LogData
+                EvaluateOnEachEpoch = options.LogData,
+                IsEncoder = options.IsEncoder
             };
 
             var trainingResult = mlp.Train(trainingModel);
