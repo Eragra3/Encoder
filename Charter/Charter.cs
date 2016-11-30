@@ -30,6 +30,7 @@ namespace Charter
                     ch.ChartAreas[0].AxisY.Interval = 10;
                 }
                 ch.ChartAreas[0].AxisX.Minimum = 0;
+                ch.Width = 500;
 
                 ch.SaveImage(path, ChartImageFormat.Png);
             }
