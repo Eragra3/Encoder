@@ -160,10 +160,6 @@ namespace Encoder.Network
                 var norm = Weights.Row(i).L2Norm();
                 var features = Weights.Row(i).Divide(norm);
 
-                var max = features.Maximum();
-                var min = features.Minimum();
-                features.MapInplace(v => (v - min) / (max - min));
-
                 allFeatures[i] = features;
             }
 

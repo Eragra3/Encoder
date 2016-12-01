@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
@@ -25,6 +26,10 @@ namespace Encoder.Mnist
 
         public static Image ToImage(Vector<double> values, int width)
         {
+            var max = values.Maximum();
+            var min = values.Minimum();
+            values.MapInplace(v => (v - min) / (max - min));
+
             var image = new Bitmap(width, values.Count / width);
 
             for (var i = 0; i < values.Count; i++)

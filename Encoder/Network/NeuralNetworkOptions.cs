@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Encoder.Network
 {
@@ -28,6 +30,7 @@ namespace Encoder.Network
 
         public int BatchSize { get; set; }
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public ActivationFunction ActivationFunction { get; set; }
 
         public double InitialWeightsRange { get; set; }

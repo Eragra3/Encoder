@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
+using Encoder.Mnist;
 using MathNet.Numerics.LinearAlgebra;
 using Newtonsoft.Json;
 
@@ -75,6 +78,20 @@ namespace Encoder.Network
                 initialWeightsRange);
         }
 
+        public Vector<double> FeedForward(Vector<double> input)
+        {
+            input = _inputLayer.Feedforward(input);
+
+            foreach (var layer in _hiddenLayers)
+            {
+                input = layer.Feedforward(input);
+            }
+
+            var result = _outputLayer.Feedforward(input);
+
+            return result;
+        }
+
         public int Compute(Vector<double> input)
         {
             input = _inputLayer.Feedforward(input);
@@ -103,7 +120,7 @@ namespace Encoder.Network
 
             var isVerbose = trainingModel.IsVerbose;
             var evaluateOnEachEpoch = trainingModel.EvaluateOnEachEpoch;
-            Debugger.Launch();
+            //Debugger.Launch();
             IList<double> epochErrors = new List<double>(maxEpochs);
             var epochEvaluations = new List<EvaluationModel>(maxEpochs);
 
@@ -134,6 +151,15 @@ namespace Encoder.Network
                 Console.WriteLine($"\tmax epochs - {maxEpochs}");
                 Console.WriteLine($"\tactivation functions - {JsonConvert.SerializeObject(activationFunctions, Formatting.None)}");
                 Console.WriteLine($"\tinitial weights ranges- {JsonConvert.SerializeObject(distributions, Formatting.None)}");
+            }
+
+            InputModel sample = null;
+            if (isEncoder)
+            {
+                Directory.CreateDirectory("encoder_logs");
+                sample = trainingSet[DateTime.Now.Ticks % trainingSet.Length];
+                var recreatedImage = MnistViewer.ToImage(sample.Values, 7);
+                recreatedImage.Save($"encoder_logs/_original.png", ImageFormat.Png);
             }
 
             var prevWeightsChange = new Matrix<double>[layersCount];
@@ -210,6 +236,14 @@ namespace Encoder.Network
                     Console.WriteLine($"Epoch - {epoch}," +
                                       $" error - {errorSum.ToString("#0.000")}," +
                                       $" test - {percentage.ToString("#0.00")}");
+
+                    if (isEncoder)
+                    {
+                        var recreatedData = FeedForward(sample.Values);
+
+                        var recreatedImage = MnistViewer.ToImage(recreatedData, 7);
+                        recreatedImage.Save($"encoder_logs/{epoch}.png", ImageFormat.Png);
+                    }
                 }
 
                 #region dump data

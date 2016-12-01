@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace Encoder.Mnist
             var fileName = path.Substring(path.LastIndexOfAny(FileSeparators) + 1);
             var label = int.Parse(fileName[0].ToString());
 
-            var values = new SparseVector(bitmap.Height * bitmap.Width);
+            var values = new DenseVector(bitmap.Height * bitmap.Width);
 
             for (var i = 0; i < bitmap.Height; i++)
             {
@@ -31,10 +32,20 @@ namespace Encoder.Mnist
 
                         var gray = (int)(color.R * 0.2126 + color.G * 0.7152 + color.B * 0.0722);
 
-                        values[j + i * bitmap.Width] = 1 - gray / 255.0;
+                        values[j + i * bitmap.Width] = gray / 255.0;
                     }
                 }
             }
+
+            if (normalize)
+            {
+                var max = values.Maximum();
+                max /= 2;
+                values.MapInplace(v => v - max);
+            }
+
+            values.CoerceZero(0.005);
+            values.MapInplace(v => v > 0.995 ? 1 : v);
 
             Vector solution;
             if (trainAsEncoder)
@@ -47,15 +58,6 @@ namespace Encoder.Mnist
                 {
                     [label] = 1.0
                 };
-            }
-
-
-
-            if (normalize)
-            {
-                var max = values.Maximum();
-                max /= 2;
-                values.MapInplace(v => v - max);
             }
 
             var image = new MnistModel

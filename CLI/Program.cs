@@ -17,7 +17,7 @@ namespace CLI
     {
         private const string DATA_PATH = "../";
         private const string TEST_DATA_PATH = DATA_PATH + "TestData";
-        private const string TRAINING_DATA_PATH = DATA_PATH + "TestData";
+        private const string TRAINING_DATA_PATH = DATA_PATH + "TrainingData";
         private const string VALIDATION_PATH = DATA_PATH + "ValidationData";
 
         static void Main(string[] args)
@@ -46,7 +46,7 @@ namespace CLI
             double errorThreshold = 0;
             var batchSize = 20;
             var activationFunction = ActivationFunction.Sigmoid;
-            var normalStDev = 0.5;
+            var initialWeightsRange = 1.0;
 
             var imageWidth = 7;
 
@@ -77,7 +77,7 @@ namespace CLI
                     .Parameter("max-epochs", val => maxEpochs = int.Parse(val), "Program will terminate learning if reaches this epoch")
                     .Parameter("batch-size", val => batchSize = int.Parse(val), "Batch size")
                     .Parameter("activation", val => activationFunction = ParseActivationFunction(val), "Activation function, (sigmoid, tanh)")
-                    .Parameter("normal", val => normalStDev = double.Parse(val, CultureInfo.InvariantCulture), "Initial weights normal distribution standard deviation")
+                    .Parameter("initial-weights", val => initialWeightsRange = double.Parse(val, CultureInfo.InvariantCulture), "Initial weights range [number](-number;number)")
                     .Option("v", () => isVerbose = true, "Explain what is happening")
                     .Option("verbose", () => isVerbose = true, "Explain what is happening")
                     .Option("d", () => dump = true, "Dump training data")
@@ -103,7 +103,7 @@ namespace CLI
                     .Parameter("max-epochs", val => maxEpochs = int.Parse(val), "Program will terminate learning if reaches this epoch")
                     .Parameter("batch-size", val => batchSize = int.Parse(val), "Batch size")
                     .Parameter("activation", val => activationFunction = ParseActivationFunction(val), "Activation function, (sigmoid, tanh)")
-                    .Parameter("normal", val => normalStDev = double.Parse(val, CultureInfo.InvariantCulture), "Initial weights normal distribution standard deviation")
+                    .Parameter("normal", val => initialWeightsRange = double.Parse(val, CultureInfo.InvariantCulture), "Initial weights normal distribution standard deviation")
                     .Parameter("repetitions", val => repetitions = int.Parse(val, CultureInfo.InvariantCulture), "Number of repetitions for each value in experiment")
                     .Option("v", () => isVerbose = true, "Explain what is happening")
                     .Option("verbose", () => isVerbose = true, "Explain what is happening")
@@ -151,7 +151,7 @@ namespace CLI
                             isVerbose,
                             batchSize,
                             activationFunction,
-                            normalStDev,
+                            initialWeightsRange,
                             dump,
                             normalize,
                             isEncoder
@@ -264,7 +264,7 @@ namespace CLI
                             isVerbose,
                             batchSize,
                             activationFunction,
-                            normalStDev,
+                            initialWeightsRange,
                             true,
                             normalize,
                             isEncoder
