@@ -30,9 +30,9 @@ namespace Encoder.Mnist
                     {
                         var color = bitmap.GetPixel(j, i);
 
-                        var gray = (int)(color.R * 0.2126 + color.G * 0.7152 + color.B * 0.0722);
+                        var gray = (int)(color.R * 0.3 + color.G * 0.59 + color.B * 0.11);
 
-                        values[j + i * bitmap.Width] =1 -  gray / 255.0;
+                        values[j + i * bitmap.Width] = 1 - gray / 255.0;
                     }
                 }
             }

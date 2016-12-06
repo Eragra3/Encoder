@@ -17,7 +17,7 @@ namespace CLI
     {
         private const string DATA_PATH = "../";
         private const string TEST_DATA_PATH = DATA_PATH + "TestData";
-        private const string TRAINING_DATA_PATH = DATA_PATH + "ValidationData";
+        private const string TRAINING_DATA_PATH = DATA_PATH + "TestData";
         private const string VALIDATION_PATH = DATA_PATH + "ValidationData";
 
         static void Main(string[] args)
@@ -105,6 +105,7 @@ namespace CLI
                     .Parameter("activation", val => activationFunction = ParseActivationFunction(val), "Activation function, (sigmoid, tanh)")
                     .Parameter("normal", val => initialWeightsRange = double.Parse(val, CultureInfo.InvariantCulture), "Initial weights normal distribution standard deviation")
                     .Parameter("repetitions", val => repetitions = int.Parse(val, CultureInfo.InvariantCulture), "Number of repetitions for each value in experiment")
+                    .Parameter("initial-weights", val => initialWeightsRange = double.Parse(val, CultureInfo.InvariantCulture), "Initial weights range [number](-number;number)")
                     .Option("v", () => isVerbose = true, "Explain what is happening")
                     .Option("verbose", () => isVerbose = true, "Explain what is happening")
                     .Option("n", () => normalize = true, "Normalize input")
@@ -138,7 +139,7 @@ namespace CLI
                             Console.WriteLine($"Path is invalid");
                             return;
                         }
-                        Debugger.Launch();
+                        //Debugger.Launch();
 
                         var options = new NeuralNetworkOptions(
                             learningRate,

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Forms.DataVisualization.Charting;
 using Encoder.Network;
 

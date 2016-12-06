@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Encoder.Mnist;
 using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
 using Newtonsoft.Json;
 
 namespace Encoder.Network
@@ -16,33 +17,33 @@ namespace Encoder.Network
     public class NeuralNetwork
     {
         [JsonProperty]
-        protected readonly InputLayer _inputLayer;
+        protected readonly InputLayer InputLayer;
         [JsonProperty]
-        protected readonly HiddenLayer[] _hiddenLayers;
+        protected readonly HiddenLayer[] HiddenLayers;
         [JsonProperty]
-        protected readonly OutputLayer _outputLayer;
+        protected readonly OutputLayer OutputLayer;
 
         //all layers except input
-        protected HiddenLayer[] _layers;
+        private HiddenLayer[] _layers;
         protected HiddenLayer[] Layers
         {
             get
             {
                 if (_layers != null) return _layers;
 
-                _layers = new HiddenLayer[_sizes.Length - 1];
-                for (var i = 0; i < _hiddenLayers.Length; i++)
+                _layers = new HiddenLayer[Sizes.Length - 1];
+                for (var i = 0; i < HiddenLayers.Length; i++)
                 {
-                    _layers[i] = _hiddenLayers[i];
+                    _layers[i] = HiddenLayers[i];
                 }
-                _layers[_layers.Length - 1] = _outputLayer;
+                _layers[_layers.Length - 1] = OutputLayer;
 
                 return _layers;
             }
         }
 
         [JsonProperty]
-        protected readonly int[] _sizes;
+        protected readonly int[] Sizes;
 
         [JsonConstructor]
         protected NeuralNetwork()
@@ -55,23 +56,23 @@ namespace Encoder.Network
             params int[] sizes
             )
         {
-            _sizes = sizes;
-            _inputLayer = new InputLayer();
+            Sizes = sizes;
+            InputLayer = new InputLayer();
 
-            _hiddenLayers = new HiddenLayer[sizes.Length - 2];
+            HiddenLayers = new HiddenLayer[sizes.Length - 2];
 
             for (var i = 0; i < sizes.Length - 2; i++)
             {
                 //var isLast = i == sizes.Length - 1;
-                _hiddenLayers[i] = new HiddenLayer(
+                HiddenLayers[i] = new HiddenLayer(
                     sizes[i],
                     sizes[i + 1],
-                    activationFunction,
+                    activationFunction, 
                     initialWeightsRange);
             }
 
             var length = sizes.Length;
-            _outputLayer = new OutputLayer(
+            OutputLayer = new OutputLayer(
                 sizes[length - 2],
                 sizes[length - 1],
                 activationFunction,
@@ -80,28 +81,28 @@ namespace Encoder.Network
 
         public Vector<double> FeedForward(Vector<double> input)
         {
-            input = _inputLayer.Feedforward(input);
+            input = InputLayer.Feedforward(input);
 
-            foreach (var layer in _hiddenLayers)
+            foreach (var layer in HiddenLayers)
             {
                 input = layer.Feedforward(input);
             }
 
-            var result = _outputLayer.Feedforward(input);
+            var result = OutputLayer.Feedforward(input);
 
             return result;
         }
 
         public int Compute(Vector<double> input)
         {
-            input = _inputLayer.Feedforward(input);
+            input = InputLayer.Feedforward(input);
 
-            foreach (var layer in _hiddenLayers)
+            foreach (var layer in HiddenLayers)
             {
                 input = layer.Feedforward(input);
             }
 
-            var decision = _outputLayer.Compute(input);
+            var decision = OutputLayer.Compute(input);
 
             return decision;
         }
@@ -127,7 +128,7 @@ namespace Encoder.Network
             var errorSum = double.PositiveInfinity;
             var epoch = 0;
 
-            var layersCount = _sizes.Length - 1;
+            var layersCount = Sizes.Length - 1;
             #region create nablas arrays
             var nablaWeights = new Matrix<double>[layersCount];
             var nablaBiases = new Vector<double>[layersCount];
@@ -144,7 +145,7 @@ namespace Encoder.Network
                 var activationFunctions = Layers.Select(l => l.CurrentActivationFunction.ToString()).ToArray();
                 var distributions = Layers.Select(l => l.InitialWeightsRange.ToString("#0.00")).ToArray();
                 Console.WriteLine("Starting with params:");
-                Console.WriteLine($"\tsizes- {JsonConvert.SerializeObject(_sizes)}");
+                Console.WriteLine($"\tsizes- {JsonConvert.SerializeObject(Sizes)}");
                 Console.WriteLine($"\tlearning rate - {learningRate}");
                 Console.WriteLine($"\tmomentum- {momentum}");
                 Console.WriteLine($"\terror threshold - {errorTreshold}");
@@ -186,8 +187,26 @@ namespace Encoder.Network
                 epoch++;
                 errorSum = 0;
 
-                foreach (var item in HelperFunctions.RandomPermutation(trainingSet).Take(batchSize))
+                var batch = HelperFunctions.RandomPermutation(trainingSet).Take(batchSize).ToList();
+                //Vector<double> activationsSum = new DenseVector(_hiddenLayers[0].NeuronsCount);
+                //foreach (var item in batch)
+                //{
+                //    var activation = item.Values;
+                //    foreach (var layer in _hiddenLayers)
+                //    {
+                //        activation = layer.Feedforward(activation);
+                //    }
+                //    activationsSum += activation;
+                //}
+                //var avgActivations = activationsSum.Divide(batch.Count);
+                foreach (var item in batch)
                 {
+
+                    //const double beta = 0.5;
+                    //const double rho = 0.05;
+                    //var divergence = beta * (-rho / avgActivations + (1 - rho) / (1 - avgActivations));
+
+                    //var bpResult = Backpropagate(item.Values, item.ExpectedSolution, divergence);
                     var bpResult = Backpropagate(item.Values, item.ExpectedSolution);
 
                     for (var i = 0; i < layersCount - 1; i++)
@@ -288,11 +307,13 @@ namespace Encoder.Network
             return trainingResult;
         }
 
+        //public BackpropagationResult Backpropagate(Vector<double> inputs, Vector<double> expectedOutput, Vector<double> divergences)
         public BackpropagationResult Backpropagate(Vector<double> inputs, Vector<double> expectedOutput)
         {
-            var layersCount = _sizes.Length - 1;
+            var layersCount = Sizes.Length - 1;
             var nablaWeights = new Matrix<double>[layersCount];
             var nablaBiases = new Vector<double>[layersCount];
+            //Debugger.Launch();
 
             var nets = new Vector<double>[layersCount + 1];
             var activations = new Vector<double>[layersCount + 1];
@@ -300,23 +321,23 @@ namespace Encoder.Network
             activations[0] = inputs;
             #region get nets and activations
             var prevActivation = inputs;
-            for (var i = 0; i < _hiddenLayers.Length; i++)
+            for (var i = 0; i < HiddenLayers.Length; i++)
             {
-                var net = _hiddenLayers[i].GetNet(prevActivation);
+                var net = HiddenLayers[i].GetNet(prevActivation);
                 nets[i + 1] = net;
-                var activation = _hiddenLayers[i].GetActivation(net);
+                var activation = HiddenLayers[i].GetActivation(net);
                 activations[i + 1] = activation;
                 prevActivation = activation;
             }
-            var outputNet = _outputLayer.GetNet(prevActivation);
-            nets[layersCount] = outputNet;
-            var outputActivation = _outputLayer.GetActivation(outputNet);
-            activations[layersCount] = outputActivation;
+            var outputNet = OutputLayer.GetNet(prevActivation);
+            nets[nets.Length - 1] = outputNet;
+            var outputActivation = OutputLayer.GetActivation(outputNet);
+            activations[activations.Length - 1] = outputActivation;
 
             #endregion
 
             #region get output layer nablas
-            var outputLayerNetDerivative = _outputLayer.ActivationFunctionPrime(outputNet);
+            var outputLayerNetDerivative = OutputLayer.ActivationFunctionPrime(outputNet);
 
             var delta = (outputActivation - expectedOutput).PointwiseMultiply(outputLayerNetDerivative);
 
@@ -330,11 +351,19 @@ namespace Encoder.Network
             {
                 var net = nets[nets.Length - layerRevIndex];
                 var layer = _layers[_layers.Length - layerRevIndex];
-                var nextLayerWeights = _layers[_layers.Length - layerRevIndex + 1].Weights;
+                var prevLayerWeights = _layers[_layers.Length - layerRevIndex + 1].Weights;
                 var activationPrime = layer.ActivationFunctionPrime(net);
                 var activation = activations[activations.Length - layerRevIndex - 1];
 
-                delta = nextLayerWeights.Transpose().Multiply(delta).PointwiseMultiply(activationPrime);
+                //the naming
+                var firstPart = prevLayerWeights.Transpose().Multiply(delta);
+
+                //if (true)
+                //{
+                //    firstPart += divergences;
+                //}
+
+                delta = firstPart.PointwiseMultiply(activationPrime);
                 nablaBiases[nablaBiases.Length - layerRevIndex] = delta;
                 nablaWeights[nablaBiases.Length - layerRevIndex] = delta.OuterProduct(activation);
             }
@@ -376,7 +405,7 @@ namespace Encoder.Network
         {
             var features = new Vector<double>[1][];
 
-            features[0] = _hiddenLayers[0].GetFeatures();
+            features[0] = HiddenLayers[0].GetFeatures();
             //features[1] = _outputLayer.GetFeatures();
 
             return features;

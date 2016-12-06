@@ -26,14 +26,14 @@ namespace Encoder.Network
 
         public new Vector<double> Compute(Vector<double> input)
         {
-            input = _inputLayer.Feedforward(input);
+            input = InputLayer.Feedforward(input);
 
-            foreach (var layer in _hiddenLayers)
+            foreach (var layer in HiddenLayers)
             {
                 input = layer.Feedforward(input);
             }
 
-            var decision = _outputLayer.Feedforward(input);
+            var decision = OutputLayer.Feedforward(input);
 
             return decision;
         }

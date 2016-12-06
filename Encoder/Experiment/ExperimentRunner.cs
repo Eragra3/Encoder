@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Encoder.Mnist;
 using Encoder.Network;
+using Newtonsoft.Json;
 
 namespace Encoder.Experiment
 {
@@ -29,7 +30,7 @@ namespace Encoder.Experiment
             {
                 var learningRate = learningRates[i];
 
-                if (isVerbose) Console.WriteLine($"Running experiment for {learningRate}");
+                Console.WriteLine($"Running experiment for {learningRate}");
 
                 var trainingOptions = new NeuralNetworkOptions(
                     learningRate,
@@ -48,6 +49,12 @@ namespace Encoder.Experiment
                     options.NormalizeInput,
                     options.IsEncoder
                     );
+
+                #region dump used params
+                //lel
+                var dumpling = JsonConvert.SerializeObject(options, Formatting.Indented);
+                File.WriteAllText(logPath + ".log", dumpling);
+                #endregion
 
                 var trainingResponses = new TrainingResult[repetitions];
 
@@ -109,7 +116,7 @@ namespace Encoder.Experiment
             {
                 var initialWeightsRange = initialWeightsRanges[i];
 
-                if (isVerbose) Console.WriteLine($"Running experiment for {initialWeightsRange}");
+                Console.WriteLine($"Running experiment for {initialWeightsRange}");
 
                 var trainingOptions = new NeuralNetworkOptions(
                     options.LearningRate,
@@ -128,6 +135,12 @@ namespace Encoder.Experiment
                     options.NormalizeInput,
                     options.IsEncoder
                     );
+
+                #region dump used params
+                //lel
+                var dumpling = JsonConvert.SerializeObject(options, Formatting.Indented);
+                File.WriteAllText(logPath + ".log", dumpling);
+                #endregion
 
                 var trainingResponses = new TrainingResult[repetitions];
 
@@ -187,7 +200,7 @@ namespace Encoder.Experiment
             {
                 var activationFunction = activatonFunctions[i];
 
-                if (isVerbose) Console.WriteLine($"Running experiment for {activationFunction}");
+                Console.WriteLine($"Running experiment for {activationFunction}");
 
                 var trainingOptions = new NeuralNetworkOptions(
                     options.LearningRate,
@@ -206,6 +219,12 @@ namespace Encoder.Experiment
                     options.NormalizeInput,
                     options.IsEncoder
                     );
+
+                #region dump used params
+                //lel
+                var dumpling = JsonConvert.SerializeObject(options, Formatting.Indented);
+                File.WriteAllText(logPath + ".log", dumpling);
+                #endregion
 
                 var trainingResponses = new TrainingResult[repetitions];
 
@@ -247,6 +266,7 @@ namespace Encoder.Experiment
                 #endregion
             }
         }
+
         public static void RunMomentumExperiment(
             double[] momentums,
             NeuralNetworkOptions options,
@@ -264,7 +284,7 @@ namespace Encoder.Experiment
             {
                 var momentum = momentums[i];
 
-                if (isVerbose) Console.WriteLine($"Running experiment for {momentum}");
+                Console.WriteLine($"Running experiment for {momentum}");
 
                 var trainingOptions = new NeuralNetworkOptions(
                     options.LearningRate,
@@ -283,6 +303,12 @@ namespace Encoder.Experiment
                     options.NormalizeInput,
                     options.IsEncoder
                     );
+
+                #region dump used params
+                //lel
+                var dumpling = JsonConvert.SerializeObject(options, Formatting.Indented);
+                File.WriteAllText(logPath + ".log", dumpling);
+                #endregion
 
                 var trainingResponses = new TrainingResult[repetitions];
 

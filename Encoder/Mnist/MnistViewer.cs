@@ -16,7 +16,7 @@ namespace Encoder.Mnist
 
             for (var i = 0; i < model.Count; i++)
             {
-                sb.Append(Math.Floor(model[i] * 255).ToString(CultureInfo.InvariantCulture).PadRight(3, ' '));
+                sb.Append(Math.Round(model[i], 2).ToString(CultureInfo.InvariantCulture).PadRight(4, ' '));
 
                 sb.Append((i + 1) % width == 0 ? "\n" : separator);
             }
@@ -28,7 +28,7 @@ namespace Encoder.Mnist
         {
             var max = values.Maximum();
             var min = values.Minimum();
-            values.MapInplace(v => (v - min) / (max - min));
+            values.MapInplace(v => 1 - (v - min) / (max - min));
 
             var image = new Bitmap(width, values.Count / width);
 
@@ -52,9 +52,9 @@ namespace Encoder.Mnist
 
             for (var i = 0; i < model.Count; i++)
             {
-                if (model[i] > 0.75) sb.Append("@");
-                else if (model[i] > 0.2) sb.Append("+");
-                else sb.Append(" ");
+                if (model[i] > 0.75) sb.Append(" ");
+                else if (model[i] > 0.15) sb.Append("+");
+                else sb.Append("@");
 
                 if ((i + 1) % width == 0) sb.Append("\n");
             }

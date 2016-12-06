@@ -34,9 +34,9 @@ namespace Encoder.Network
         public Vector<double> Biases;
 
         [JsonProperty]
-        protected readonly int _inputsCount;
+        public readonly int InputsCount;
         [JsonProperty]
-        protected readonly int _neuronsCount;
+        public readonly int NeuronsCount;
 
         public ActivationFunction CurrentActivationFunction { get; }
 
@@ -77,8 +77,8 @@ namespace Encoder.Network
             )
         {
             CurrentActivationFunction = activationFunction;
-            _inputsCount = inputsCount;
-            _neuronsCount = outputsCount;
+            InputsCount = inputsCount;
+            NeuronsCount = outputsCount;
             InitialWeightsRange = initialWeightsRange;
 
             Weights = GetNewWeightsMatrix(false);
@@ -87,14 +87,14 @@ namespace Encoder.Network
 
         public Matrix GetNewWeightsMatrix(bool allZeroes)
         {
-            if (allZeroes) return new DenseMatrix(_neuronsCount, _inputsCount);
-            return DenseMatrix.CreateRandom(_neuronsCount, _inputsCount, CurrentDistribution);
+            if (allZeroes) return new DenseMatrix(NeuronsCount, InputsCount);
+            return DenseMatrix.CreateRandom(NeuronsCount, InputsCount, CurrentDistribution);
         }
 
         public Vector GetNewBiasesVector(bool allZeroes)
         {
-            if (allZeroes) return new DenseVector(_neuronsCount);
-            return DenseVector.CreateRandom(_neuronsCount, CurrentDistribution);
+            if (allZeroes) return new DenseVector(NeuronsCount);
+            return DenseVector.CreateRandom(NeuronsCount, CurrentDistribution);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace Encoder.Network
 
         public Vector<double>[] GetFeatures()
         {
-            var allFeatures = new Vector<double>[_neuronsCount];
+            var allFeatures = new Vector<double>[NeuronsCount];
 
             for (var i = 0; i < Weights.RowCount; i++)
             {
