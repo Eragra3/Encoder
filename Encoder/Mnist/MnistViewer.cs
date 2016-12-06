@@ -28,7 +28,7 @@ namespace Encoder.Mnist
         {
             var max = values.Maximum();
             var min = values.Minimum();
-            values.MapInplace(v => 1 - (v - min) / (max - min));
+            values.MapInplace(v => (v - min) / (max - min));
 
             var image = new Bitmap(width, values.Count / width);
 
@@ -36,7 +36,7 @@ namespace Encoder.Mnist
             {
                 var x = i % width;
                 var y = i / width;
-                var c = values[i];
+                var c = 1 - values[i];
                 c *= 255;
                 var cInt = (int)c;
                 var color = Color.FromArgb(cInt, cInt, cInt);

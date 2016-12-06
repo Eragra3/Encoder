@@ -67,7 +67,7 @@ namespace Encoder.Network
                 HiddenLayers[i] = new HiddenLayer(
                     sizes[i],
                     sizes[i + 1],
-                    activationFunction, 
+                    activationFunction,
                     initialWeightsRange);
             }
 
@@ -114,7 +114,7 @@ namespace Encoder.Network
             var validationSet = trainingModel.ValidationSet;
             var errorTreshold = trainingModel.ErrorThreshold;
             var maxEpochs = trainingModel.MaxEpochs;
-            var batchSize = trainingModel.BatchSize;
+            var batchSize = Math.Min(trainingModel.BatchSize, trainingModel.TrainingSet.Length);
             var learningRate = trainingModel.LearningRate;
             var momentum = trainingModel.Momentum;
             var isEncoder = trainingModel.IsEncoder;
@@ -209,7 +209,7 @@ namespace Encoder.Network
                     //var bpResult = Backpropagate(item.Values, item.ExpectedSolution, divergence);
                     var bpResult = Backpropagate(item.Values, item.ExpectedSolution);
 
-                    for (var i = 0; i < layersCount - 1; i++)
+                    for (var i = 0; i < nablaWeights.Length; i++)
                     {
                         nablaBiases[i] = bpResult.Biases[i] + nablaBiases[i];
                         nablaWeights[i] = bpResult.Weights[i] + nablaWeights[i];
@@ -232,7 +232,7 @@ namespace Encoder.Network
                     //{
                     //    weights = (1 - learningRate * 0.1) * weights;
                     //}
-                    Layers[i].Weights.Subtract(weightsChange, Layers[i].Weights);
+                    Layers[i].Weights = Layers[i].Weights - weightsChange;
 
                     var biasesChange = learningRate / batchSize * nablaBiases[i];
                     if (prevBiasChange[i] != null) biasesChange += momentum * prevBiasChange[i];
@@ -241,7 +241,7 @@ namespace Encoder.Network
                     //{
                     //    biases = (1 - learningRate * 0.1) * biases;
                     //}
-                    Layers[i].Biases.Subtract(biasesChange, Layers[i].Biases);
+                    Layers[i].Biases = Layers[i].Biases - biasesChange;
 
                     prevWeightsChange[i] = weightsChange;
                     prevBiasChange[i] = biasesChange;
@@ -342,7 +342,7 @@ namespace Encoder.Network
             var delta = (outputActivation - expectedOutput).PointwiseMultiply(outputLayerNetDerivative);
 
             nablaBiases[nablaBiases.Length - 1] = delta;
-            nablaWeights[nablaWeights.Length - 1] = delta.OuterProduct(activations[activations.Length - 2]);
+            nablaWeights[nablaWeights.Length - 1] = delta.OuterProduct(nets[activations.Length - 2]);
             #endregion
 
             // skipping 0 from end
@@ -350,13 +350,14 @@ namespace Encoder.Network
             for (var layerRevIndex = 2; layerRevIndex <= _layers.Length; layerRevIndex++)
             {
                 var net = nets[nets.Length - layerRevIndex];
+                var prevNet = nets[nets.Length - layerRevIndex - 1];
                 var layer = _layers[_layers.Length - layerRevIndex];
-                var prevLayerWeights = _layers[_layers.Length - layerRevIndex + 1].Weights;
+                var nextLayerWeights = _layers[_layers.Length - layerRevIndex + 1].Weights;
                 var activationPrime = layer.ActivationFunctionPrime(net);
-                var activation = activations[activations.Length - layerRevIndex - 1];
+                //var activation = activations[activations.Length - layerRevIndex - 1];
 
                 //the naming
-                var firstPart = prevLayerWeights.Transpose().Multiply(delta);
+                var firstPart = nextLayerWeights.Transpose().Multiply(delta);
 
                 //if (true)
                 //{
@@ -365,7 +366,7 @@ namespace Encoder.Network
 
                 delta = firstPart.PointwiseMultiply(activationPrime);
                 nablaBiases[nablaBiases.Length - layerRevIndex] = delta;
-                nablaWeights[nablaBiases.Length - layerRevIndex] = delta.OuterProduct(activation);
+                nablaWeights[nablaBiases.Length - layerRevIndex] = delta.OuterProduct(prevNet);
             }
 
             var result = new BackpropagationResult

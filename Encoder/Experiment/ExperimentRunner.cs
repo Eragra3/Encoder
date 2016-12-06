@@ -93,7 +93,10 @@ namespace Encoder.Experiment
                 File.WriteAllText(path, log.ToString());
 
                 #region dump plot
-                ExperimentVisualization.GenerateEvaluationPlot(trainingResponses, logPath + "_" + learningRate);
+                if (!options.IsEncoder)
+                {
+                    ExperimentVisualization.GenerateEvaluationPlot(trainingResponses, logPath + "_" + learningRate);
+                }
                 ExperimentVisualization.GenerateErrorPlot(trainingResponses, logPath + "_error_" + learningRate);
                 #endregion
             }

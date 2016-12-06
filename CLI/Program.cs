@@ -17,7 +17,8 @@ namespace CLI
     {
         private const string DATA_PATH = "../";
         private const string TEST_DATA_PATH = DATA_PATH + "TestData";
-        private const string TRAINING_DATA_PATH = DATA_PATH + "TestData";
+        private const string TRAINING_DATA_PATH = DATA_PATH + "TrainingData";
+        private const string ENCODER_DATA_PATH = DATA_PATH + "EncoderData";
         private const string VALIDATION_PATH = DATA_PATH + "ValidationData";
 
         static void Main(string[] args)
@@ -117,7 +118,6 @@ namespace CLI
                     .Parameter("output", path => outputPath = path, "Path to save features")
                     .Parameter("width", val => imageWidth = int.Parse(val), "Input width to display feature as image")
                 .Command("encoder", () => command = Command.Encoder, "Use encoder mode")
-                    .Parameter("output", path => outputPath = path, "Path to save decoded image")
                     .Parameter("mlp", json => nnJsonPath = json, "Encoder data in json format", "Json")
                     .Parameter("image", path => imagePath = path, "Path to image", "Path to image")
                     .Option("n", () => normalize = true, "Normalize input")
@@ -146,7 +146,7 @@ namespace CLI
                             momentum,
                             errorThreshold,
                             layersSizes,
-                            TRAINING_DATA_PATH,
+                            isEncoder ? ENCODER_DATA_PATH : TRAINING_DATA_PATH,
                             VALIDATION_PATH,
                             TEST_DATA_PATH,
                             maxEpochs,
@@ -259,7 +259,7 @@ namespace CLI
                             momentum,
                             errorThreshold,
                             layersSizes,
-                            TRAINING_DATA_PATH,
+                            isEncoder ? ENCODER_DATA_PATH : TRAINING_DATA_PATH,
                             VALIDATION_PATH,
                             TEST_DATA_PATH,
                             maxEpochs,
@@ -340,7 +340,10 @@ namespace CLI
 
                         var layerFeatures = mlp.GetFeatures();
 
-                        Directory.Delete(outputPath, true);
+                        if (Directory.Exists(outputPath))
+                        {
+                            Directory.Delete(outputPath, true);
+                        }
                         Directory.CreateDirectory(outputPath);
                         for (int layerIndex = 0; layerIndex < layerFeatures.Length; layerIndex++)
                         {
