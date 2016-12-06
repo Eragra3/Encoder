@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -72,7 +73,7 @@ namespace Encoder.Experiment
                     log.Append("|evaluation_" + j + "|error_" + j);
                 }
                 log.AppendLine();
-                for (var j = 0; j < trainingResponses[0].Epochs + 1; j++)
+                for (var j = 0; j < trainingResponses[0].Epochs; j++)
                 {
                     log.Append(j);
                     for (var n = 0; n < trainingResponses.Length; n++)
@@ -150,7 +151,7 @@ namespace Encoder.Experiment
                     log.Append("|evaluation_" + j + "|error_" + j);
                 }
                 log.AppendLine();
-                for (var j = 0; j < trainingResponses[0].Epochs + 1; j++)
+                for (var j = 0; j < trainingResponses[0].Epochs; j++)
                 {
                     log.Append(j);
                     for (var n = 0; n < trainingResponses.Length; n++)
@@ -228,7 +229,7 @@ namespace Encoder.Experiment
                     log.Append("|evaluation_" + j + "|error_" + j);
                 }
                 log.AppendLine();
-                for (var j = 0; j < trainingResponses[0].Epochs + 1; j++)
+                for (var j = 0; j < trainingResponses[0].Epochs; j++)
                 {
                     log.Append(j);
                     for (var n = 0; n < trainingResponses.Length; n++)
@@ -305,7 +306,7 @@ namespace Encoder.Experiment
                     log.Append("|evaluation_" + j + "|error_" + j);
                 }
                 log.AppendLine();
-                for (var j = 0; j < trainingResponses[0].Epochs + 1; j++)
+                for (var j = 0; j < trainingResponses[0].Epochs; j++)
                 {
                     log.Append(j);
                     for (var n = 0; n < trainingResponses.Length; n++)

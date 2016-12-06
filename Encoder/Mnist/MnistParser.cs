@@ -32,7 +32,7 @@ namespace Encoder.Mnist
 
                         var gray = (int)(color.R * 0.2126 + color.G * 0.7152 + color.B * 0.0722);
 
-                        values[j + i * bitmap.Width] = gray / 255.0;
+                        values[j + i * bitmap.Width] =1 -  gray / 255.0;
                     }
                 }
             }
@@ -44,8 +44,8 @@ namespace Encoder.Mnist
                 values.MapInplace(v => v - max);
             }
 
-            values.CoerceZero(0.005);
-            values.MapInplace(v => v > 0.995 ? 1 : v);
+            //values.CoerceZero(0.005);
+            //values.MapInplace(v => v > 0.995 ? 1 : v);
 
             Vector solution;
             if (trainAsEncoder)

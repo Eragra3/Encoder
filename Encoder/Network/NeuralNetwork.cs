@@ -199,22 +199,30 @@ namespace Encoder.Network
                     var solution = bpResult.Solution;
                     var expectedSolution = item.ExpectedSolution;
 
-                    errorSum += solution.Map2((y, o) => Math.Pow(y - o, 2), expectedSolution).Sum();
+                    errorSum += solution.Map2((y, o) => Math.Abs(y - o), expectedSolution).Sum();
                 }
                 errorSum /= batchSize;
 
                 #region update parameters
                 for (var i = 0; i < layersCount; i++)
                 {
-                    var weights = Layers[i].Weights;
-                    var weightsChange = learningRate * nablaWeights[i];
+                    var weightsChange = learningRate / batchSize * nablaWeights[i];
                     if (prevWeightsChange[i] != null) weightsChange += momentum * prevWeightsChange[i];
-                    Layers[i].Weights = weights - weightsChange;
+                    //L2
+                    //if (true)
+                    //{
+                    //    weights = (1 - learningRate * 0.1) * weights;
+                    //}
+                    Layers[i].Weights.Subtract(weightsChange, Layers[i].Weights);
 
-                    var biases = Layers[i].Biases;
-                    var biasesChange = learningRate * nablaBiases[i];
+                    var biasesChange = learningRate / batchSize * nablaBiases[i];
                     if (prevBiasChange[i] != null) biasesChange += momentum * prevBiasChange[i];
-                    Layers[i].Biases = biases - biasesChange;
+                    //L2
+                    //if (true)
+                    //{
+                    //    biases = (1 - learningRate * 0.1) * biases;
+                    //}
+                    Layers[i].Biases.Subtract(biasesChange, Layers[i].Biases);
 
                     prevWeightsChange[i] = weightsChange;
                     prevBiasChange[i] = biasesChange;
@@ -313,22 +321,22 @@ namespace Encoder.Network
             var delta = (outputActivation - expectedOutput).PointwiseMultiply(outputLayerNetDerivative);
 
             nablaBiases[nablaBiases.Length - 1] = delta;
-            nablaWeights[nablaWeights.Length - 1] = delta.OuterProduct(outputActivation);
+            nablaWeights[nablaWeights.Length - 1] = delta.OuterProduct(activations[activations.Length - 2]);
             #endregion
 
-            for (var layerIndex = _hiddenLayers.Length - 1; layerIndex >= 0; layerIndex--)
+            // skipping 0 from end
+            // its reverse for loop!
+            for (var layerRevIndex = 2; layerRevIndex <= _layers.Length; layerRevIndex++)
             {
-                var layer = _hiddenLayers[layerIndex];
-                var activation = activations[layerIndex];
-                var net = nets[layerIndex + 1];
+                var net = nets[nets.Length - layerRevIndex];
+                var layer = _layers[_layers.Length - layerRevIndex];
+                var nextLayerWeights = _layers[_layers.Length - layerRevIndex + 1].Weights;
                 var activationPrime = layer.ActivationFunctionPrime(net);
-                var nextLayerWeights = layerIndex + 1 == _hiddenLayers.Length
-                    ? _outputLayer.Weights
-                    : _hiddenLayers[layerIndex + 1].Weights;
+                var activation = activations[activations.Length - layerRevIndex - 1];
 
                 delta = nextLayerWeights.Transpose().Multiply(delta).PointwiseMultiply(activationPrime);
-                nablaBiases[layerIndex] = delta;
-                nablaWeights[layerIndex] = delta.OuterProduct(activation);
+                nablaBiases[nablaBiases.Length - layerRevIndex] = delta;
+                nablaWeights[nablaBiases.Length - layerRevIndex] = delta.OuterProduct(activation);
             }
 
             var result = new BackpropagationResult

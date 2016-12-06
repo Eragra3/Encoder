@@ -17,7 +17,7 @@ namespace CLI
     {
         private const string DATA_PATH = "../";
         private const string TEST_DATA_PATH = DATA_PATH + "TestData";
-        private const string TRAINING_DATA_PATH = DATA_PATH + "TrainingData";
+        private const string TRAINING_DATA_PATH = DATA_PATH + "ValidationData";
         private const string VALIDATION_PATH = DATA_PATH + "ValidationData";
 
         static void Main(string[] args)
@@ -41,12 +41,12 @@ namespace CLI
 
             //mlp params
             int[] layersSizes = { 70, 200, 10 };
-            var learningRate = 0.5;
+            var learningRate = 3.0;
             var momentum = 0.9;
             double errorThreshold = 0;
             var batchSize = 20;
             var activationFunction = ActivationFunction.Sigmoid;
-            var initialWeightsRange = 1.0;
+            var initialWeightsRange = 0.25;
 
             var imageWidth = 7;
 
@@ -138,6 +138,7 @@ namespace CLI
                             Console.WriteLine($"Path is invalid");
                             return;
                         }
+                        Debugger.Launch();
 
                         var options = new NeuralNetworkOptions(
                             learningRate,
