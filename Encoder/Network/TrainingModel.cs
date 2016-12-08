@@ -29,5 +29,7 @@ namespace Encoder.Network
         public bool EvaluateOnEachEpoch { get; set; }
 
         public bool IsEncoder { get; set; }
+
+        public double Lambda { get; set; }
     }
 }

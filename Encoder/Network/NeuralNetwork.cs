@@ -116,6 +116,7 @@ namespace Encoder.Network
             var maxEpochs = trainingModel.MaxEpochs;
             var batchSize = Math.Min(trainingModel.BatchSize, trainingModel.TrainingSet.Length);
             var learningRate = trainingModel.LearningRate;
+            var lambda = trainingModel.Lambda;
             var momentum = trainingModel.Momentum;
             var isEncoder = trainingModel.IsEncoder;
 
@@ -228,20 +229,22 @@ namespace Encoder.Network
                     var weightsChange = learningRate / batchSize * nablaWeights[i];
                     if (prevWeightsChange[i] != null) weightsChange += momentum * prevWeightsChange[i];
                     //L2
-                    //if (true)
-                    //{
-                    //    weights = (1 - learningRate * 0.1) * weights;
-                    //}
-                    Layers[i].Weights = Layers[i].Weights - weightsChange;
+                    var weights = Layers[i].Weights;
+                    if (lambda != 0)
+                    {
+                        weights = (1 - learningRate * lambda / batchSize) * weights;
+                    }
+                    Layers[i].Weights = weights - weightsChange;
 
                     var biasesChange = learningRate / batchSize * nablaBiases[i];
                     if (prevBiasChange[i] != null) biasesChange += momentum * prevBiasChange[i];
                     //L2
-                    //if (true)
-                    //{
-                    //    biases = (1 - learningRate * 0.1) * biases;
-                    //}
-                    Layers[i].Biases = Layers[i].Biases - biasesChange;
+                    var biases = Layers[i].Biases;
+                    if (lambda != 0)
+                    {
+                        biases = (1 - (learningRate * lambda) / batchSize) * biases;
+                    }
+                    Layers[i].Biases = biases - biasesChange;
 
                     prevWeightsChange[i] = weightsChange;
                     prevBiasChange[i] = biasesChange;

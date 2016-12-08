@@ -49,7 +49,8 @@ namespace Encoder.Experiment
                     options.InitialWeightsRange,
                     true,
                     options.NormalizeInput,
-                    options.IsEncoder
+                    options.IsEncoder,
+                    options.Lambda
                     );
 
                 #region dump used params
@@ -147,7 +148,8 @@ namespace Encoder.Experiment
                     initialWeightsRange,
                     true,
                     options.NormalizeInput,
-                    options.IsEncoder
+                    options.IsEncoder,
+                    options.Lambda
                     );
 
                 #region dump used params
@@ -240,7 +242,8 @@ namespace Encoder.Experiment
                     options.InitialWeightsRange,
                     true,
                     options.NormalizeInput,
-                    options.IsEncoder
+                    options.IsEncoder,
+                    options.Lambda
                     );
 
                 #region dump used params
@@ -333,7 +336,8 @@ namespace Encoder.Experiment
                     options.InitialWeightsRange,
                     true,
                     options.NormalizeInput,
-                    options.IsEncoder
+                    options.IsEncoder,
+                    options.Lambda
                     );
 
                 #region dump used params
@@ -428,7 +432,8 @@ namespace Encoder.Experiment
                     options.InitialWeightsRange,
                     true,
                     options.NormalizeInput,
-                    options.IsEncoder
+                    options.IsEncoder,
+                    options.Lambda
                     );
 
                 #region dump used params

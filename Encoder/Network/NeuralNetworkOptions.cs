@@ -41,6 +41,8 @@ namespace Encoder.Network
 
         public bool IsEncoder { get; set; }
 
+        public double Lambda { get; set; }
+
         public NeuralNetworkOptions(
             double learningRate,
             double momentum,
@@ -56,7 +58,8 @@ namespace Encoder.Network
             double initialWeightsRange,
             bool logData,
             bool normalizeInput,
-            bool isEncoder)
+            bool isEncoder,
+            double lambda)
         {
             LearningRate = learningRate;
             Momentum = momentum;
@@ -73,6 +76,7 @@ namespace Encoder.Network
             LogData = logData;
             NormalizeInput = normalizeInput;
             IsEncoder = isEncoder;
+            Lambda = lambda;
         }
     }
 }

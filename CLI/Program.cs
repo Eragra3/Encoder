@@ -48,6 +48,7 @@ namespace CLI
             var batchSize = 10;
             var activationFunction = ActivationFunction.Sigmoid;
             var initialWeightsRange = 0.25;
+            var lambda = 0.0;
 
             var imageWidth = 7;
 
@@ -79,6 +80,7 @@ namespace CLI
                     .Parameter("batch-size", val => batchSize = int.Parse(val), "Batch size")
                     .Parameter("activation", val => activationFunction = ParseActivationFunction(val), "Activation function, (sigmoid, tanh)")
                     .Parameter("initial-weights", val => initialWeightsRange = double.Parse(val, CultureInfo.InvariantCulture), "Initial weights range [number](-number;number)")
+                    .Parameter("lambda", val => lambda = double.Parse(val, CultureInfo.InvariantCulture), "Lambda param for L2 regularization. Defaults to 0 (no regularization)")
                     .Option("v", () => isVerbose = true, "Explain what is happening")
                     .Option("verbose", () => isVerbose = true, "Explain what is happening")
                     .Option("d", () => dump = true, "Dump training data")
@@ -104,9 +106,9 @@ namespace CLI
                     .Parameter("max-epochs", val => maxEpochs = int.Parse(val), "Program will terminate learning if reaches this epoch")
                     .Parameter("batch-size", val => batchSize = int.Parse(val), "Batch size")
                     .Parameter("activation", val => activationFunction = ParseActivationFunction(val), "Activation function, (sigmoid, tanh)")
-                    .Parameter("normal", val => initialWeightsRange = double.Parse(val, CultureInfo.InvariantCulture), "Initial weights normal distribution standard deviation")
                     .Parameter("repetitions", val => repetitions = int.Parse(val, CultureInfo.InvariantCulture), "Number of repetitions for each value in experiment")
                     .Parameter("initial-weights", val => initialWeightsRange = double.Parse(val, CultureInfo.InvariantCulture), "Initial weights range [number](-number;number)")
+                    .Parameter("lambda", val => lambda = double.Parse(val, CultureInfo.InvariantCulture), "Lambda param for L2 regularization. Defaults to 0 (no regularization)")
                     .Option("v", () => isVerbose = true, "Explain what is happening")
                     .Option("verbose", () => isVerbose = true, "Explain what is happening")
                     .Option("n", () => normalize = true, "Normalize input")
@@ -156,7 +158,8 @@ namespace CLI
                             initialWeightsRange,
                             dump,
                             normalize,
-                            isEncoder
+                            isEncoder,
+                            lambda
                             );
 
                         var trainingResult = MnistTrainer.TrainOnMnist(options);
@@ -269,7 +272,8 @@ namespace CLI
                             initialWeightsRange,
                             true,
                             normalize,
-                            isEncoder
+                            isEncoder,
+                            lambda
                             );
 
                         switch (experiment)
