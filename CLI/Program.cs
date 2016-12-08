@@ -41,11 +41,11 @@ namespace CLI
             var normalize = false;
 
             //mlp params
-            int[] layersSizes = { 70, 200, 10 };
-            var learningRate = 3.0;
+            int[] layersSizes = { 70, 100, 10 };
+            var learningRate = 0.3;
             var momentum = 0.9;
             double errorThreshold = 0;
-            var batchSize = 20;
+            var batchSize = 10;
             var activationFunction = ActivationFunction.Sigmoid;
             var initialWeightsRange = 0.25;
 
