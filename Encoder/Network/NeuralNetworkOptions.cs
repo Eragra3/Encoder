@@ -43,6 +43,8 @@ namespace Encoder.Network
 
         public double Lambda { get; set; }
 
+        public bool TakeBest { get; set; }
+
         public NeuralNetworkOptions(
             double learningRate,
             double momentum,
@@ -59,7 +61,8 @@ namespace Encoder.Network
             bool logData,
             bool normalizeInput,
             bool isEncoder,
-            double lambda)
+            double lambda,
+            bool takeBest)
         {
             LearningRate = learningRate;
             Momentum = momentum;
@@ -77,6 +80,7 @@ namespace Encoder.Network
             NormalizeInput = normalizeInput;
             IsEncoder = isEncoder;
             Lambda = lambda;
+            TakeBest = takeBest;
         }
     }
 }

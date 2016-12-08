@@ -119,6 +119,7 @@ namespace Encoder.Network
             var lambda = trainingModel.Lambda;
             var momentum = trainingModel.Momentum;
             var isEncoder = trainingModel.IsEncoder;
+            var takeBest = trainingModel.TakeBest;
 
             var isVerbose = trainingModel.IsVerbose;
             var evaluateOnEachEpoch = trainingModel.EvaluateOnEachEpoch;
@@ -182,6 +183,9 @@ namespace Encoder.Network
             log.Append("epoch|evaluation_0|error_0");
             log.AppendLine();
             #endregion
+
+            string bestNNJson = null;
+            double bestError = double.PositiveInfinity;
 
             while (errorSum > errorTreshold && epoch < maxEpochs)
             {
@@ -293,6 +297,11 @@ namespace Encoder.Network
                 #endregion
 
                 epochErrors.Add(errorSum);
+
+                if (takeBest && errorSum < bestError)
+                {
+                    bestNNJson = ToJson();
+                }
             }
 
             #region log data
@@ -301,7 +310,7 @@ namespace Encoder.Network
 
             var trainingResult = new TrainingResult
             {
-                NeuralNetwork = this,
+                NeuralNetwork = takeBest ? FromJson(bestNNJson) : this,
                 Epochs = epoch,
                 EpochErrors = epochErrors.ToArray(),
                 Evaluations = epochEvaluations.ToArray()
@@ -418,6 +427,11 @@ namespace Encoder.Network
         public string ToJson()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        public NeuralNetwork FromJson(string nn)
+        {
+            return JsonConvert.DeserializeObject<NeuralNetwork>(nn);
         }
     }
 }

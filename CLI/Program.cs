@@ -49,6 +49,7 @@ namespace CLI
             var activationFunction = ActivationFunction.Sigmoid;
             var initialWeightsRange = 0.25;
             var lambda = 0.0;
+            var takeBest = false;
 
             var imageWidth = 7;
 
@@ -89,6 +90,7 @@ namespace CLI
                     .Option("normalize", () => normalize = true, "Normalize input")
                     .Option("e", () => isEncoder = true, "Use encoder mode")
                     .Option("encoder", () => isEncoder = true, "Use encoder mode")
+                    .Option("take-best", () => takeBest = true, "Tries to pick best solution from all epochs")
                 .Command("view", () => command = Command.View, "Show MNIST image")
                     .DefaultParameter("path", path => imagePath = path, "Path to image")
                     .Option("p", () => print = true, "Display grayscale interpretation")
@@ -159,7 +161,8 @@ namespace CLI
                             dump,
                             normalize,
                             isEncoder,
-                            lambda
+                            lambda,
+                            takeBest
                             );
 
                         var trainingResult = MnistTrainer.TrainOnMnist(options);
@@ -273,7 +276,8 @@ namespace CLI
                             true,
                             normalize,
                             isEncoder,
-                            lambda
+                            lambda,
+                            takeBest
                             );
 
                         switch (experiment)

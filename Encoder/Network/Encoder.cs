@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,11 @@ namespace Encoder.Network
             var decision = OutputLayer.Feedforward(input);
 
             return decision;
+        }
+
+        public new Encoder FromJson(string nn)
+        {
+            return JsonConvert.DeserializeObject<Encoder>(nn);
         }
     }
 }

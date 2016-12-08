@@ -50,7 +50,7 @@ namespace Encoder.Experiment
                     true,
                     options.NormalizeInput,
                     options.IsEncoder,
-                    options.Lambda
+                    options.Lambda, options.TakeBest
                     );
 
                 #region dump used params
@@ -149,7 +149,7 @@ namespace Encoder.Experiment
                     true,
                     options.NormalizeInput,
                     options.IsEncoder,
-                    options.Lambda
+                    options.Lambda, options.TakeBest
                     );
 
                 #region dump used params
@@ -243,7 +243,7 @@ namespace Encoder.Experiment
                     true,
                     options.NormalizeInput,
                     options.IsEncoder,
-                    options.Lambda
+                    options.Lambda, options.TakeBest
                     );
 
                 #region dump used params
@@ -337,7 +337,7 @@ namespace Encoder.Experiment
                     true,
                     options.NormalizeInput,
                     options.IsEncoder,
-                    options.Lambda
+                    options.Lambda, options.TakeBest
                     );
 
                 #region dump used params
@@ -433,7 +433,7 @@ namespace Encoder.Experiment
                     true,
                     options.NormalizeInput,
                     options.IsEncoder,
-                    options.Lambda
+                    options.Lambda, options.TakeBest
                     );
 
                 #region dump used params

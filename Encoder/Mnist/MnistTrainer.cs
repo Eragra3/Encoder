@@ -78,7 +78,8 @@ namespace Encoder.Mnist
                 Momentum = options.Momentum,
                 EvaluateOnEachEpoch = options.LogData,
                 IsEncoder = options.IsEncoder,
-                Lambda = options.Lambda
+                Lambda = options.Lambda,
+                TakeBest = options.TakeBest
             };
 
             var trainingResult = mlp.Train(trainingModel);

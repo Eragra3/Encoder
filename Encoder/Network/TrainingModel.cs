@@ -31,5 +31,7 @@ namespace Encoder.Network
         public bool IsEncoder { get; set; }
 
         public double Lambda { get; set; }
+
+        public bool TakeBest { get; set; }
     }
 }
