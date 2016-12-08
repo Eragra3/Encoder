@@ -171,11 +171,11 @@ namespace CLI
                             var directory = fi.Directory?.FullName ?? "";
                             var fileName = Path.GetFileNameWithoutExtension(outputPath);
                             directory += $"/{fileName}_";
-                            ExperimentVisualization.GenerateErrorPlot(trainingResult, $"{directory}error");
+                            ExperimentVisualization.GenerateErrorPlot(trainingResult, $"{directory}error", $"{fileName} - error");
 
                             if (!isEncoder)
                             {
-                                ExperimentVisualization.GenerateEvaluationPlot(trainingResult, $"{directory}evaluation");
+                                ExperimentVisualization.GenerateEvaluationPlot(trainingResult, $"{directory}evaluation", $"{fileName} - evaluation");
                             }
                         }
 
@@ -307,7 +307,7 @@ namespace CLI
                                         );
                                     break;
                                 }
-                            case Experiment.NormalDistStDev:
+                            case Experiment.InitialWeights:
                                 {
                                     var values = JsonConvert.DeserializeObject<double[]>(experimentValues);
                                     ExperimentRunner.RunInitialWeightsRangeExperiment(
@@ -318,6 +318,17 @@ namespace CLI
                                         );
                                     break;
                                 }
+                                case Experiment.Sizes:
+                                {
+                                    var values = JsonConvert.DeserializeObject<int[][]>(experimentValues);
+                                    ExperimentRunner.RunSizeExperiment(
+                                        values,
+                                        options,
+                                        repetitions,
+                                        outputPath
+                                        );
+                                    break;
+                            }
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
@@ -427,7 +438,9 @@ namespace CLI
                 case "momentum":
                     return Experiment.Momentum;
                 case "standarddeviation":
-                    return Experiment.NormalDistStDev;
+                    return Experiment.InitialWeights;
+                case "sizes":
+                    return Experiment.Sizes;
                 default:
                     throw new ArgumentException();
             }

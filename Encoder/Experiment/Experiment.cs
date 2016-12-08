@@ -11,6 +11,7 @@ namespace Encoder.Experiment
         LearningRate,
         ActivationFunction,
         Momentum,
-        NormalDistStDev
+        InitialWeights,
+        Sizes
     }
 }
